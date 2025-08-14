@@ -13,7 +13,7 @@ services:
         environment:
             ENVIRONMENT: development
         env_file:
-            - .env.dev
+            - .env.development
         tty: true
         stdin_open: true
         depends_on:
