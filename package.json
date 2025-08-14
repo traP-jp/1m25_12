@@ -1,0 +1,41 @@
+{
+	"name": "1m25_12",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack",
+		"build": "next build",
+		"start": "next start",
+		"lint": "prettier --check ./src && next lint --max-warnings=0",
+		"format": "prettier --write ./src && next lint --fix"
+	},
+	"lint-staged": {
+		"*.{ts,js,jsx,tsx}": "eslint --max-warnings=0",
+		"*.{js,jsx,ts,tsx,vue,css,html,md,json,cjs}": "prettier --check"
+	},
+	"dependencies": {
+		"@prisma/adapter-mariadb": "^6.14.0",
+		"@prisma/client": "^6.14.0",
+		"next": "15.4.6",
+		"react": "19.1.0",
+		"react-dom": "19.1.0"
+	},
+	"devDependencies": {
+		"@eslint/eslintrc": "^3",
+		"@tailwindcss/postcss": "^4",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"@typescript-eslint/eslint-plugin": "^8.39.1",
+		"@typescript-eslint/parser": "^8.39.1",
+		"eslint": "^9.33.0",
+		"eslint-config-next": "15.4.6",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-react": "^7.37.5",
+		"lint-staged": "^16.1.5",
+		"prettier": "^3.6.2",
+		"prisma": "^6.14.0",
+		"tailwindcss": "^4",
+		"typescript": "^5"
+	}
+}
