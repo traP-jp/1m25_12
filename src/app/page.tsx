@@ -1,5 +1,5 @@
-import AddUser from "@/components/addUser";
-import UserList from "@/components/userList";
+import AddUser from "@/components/AddUser";
+import UserList from "@/components/UserList";
 export default async function Home() {
 	return (
 		<div>

@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
 		};
 		return config;
 	},
+	experimental: {
+		authInterrupts: true,
+	},
+	images: {
+		remotePatterns: [new URL("https://q.trap.jp/api/v3/**")],
+	},
 };
 
 export default nextConfig;
