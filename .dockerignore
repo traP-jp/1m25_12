@@ -1,2 +1,4 @@
 .git
-generated/
+generated/prisma/
+*.md
+.env.local

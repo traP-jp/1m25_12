@@ -28,7 +28,8 @@
 		"../.next/types/**/*.ts",
 		"next-env.d.ts",
 		".next/types/**/*.ts",
-		"prettier.config.js"
+		"prettier.config.js",
+		"src/lib/axios"
 	],
 	"exclude": ["node_modules"]
 }
