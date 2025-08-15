@@ -3,6 +3,11 @@ import { PrismaClient } from "@/generated/prisma/client";
 
 const prismaClientSingleton = () => {
 	return new PrismaClient({
+		datasources: {
+			db: {
+				url: process.env.DATABASE_URL,
+			},
+		},
 		log: ["query"],
 	});
 };
