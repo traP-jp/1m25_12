@@ -1,25 +1,4 @@
 services:
-    app:
-        container_name: 1m25_12-app
-        build:
-            context: .
-            dockerfile: Dockerfile.dev
-        ports:
-            - 3000:3000
-        volumes:
-            - ./:/app
-            - node_modules:/app/node_modules
-        command: ["pnpm", "dev"]
-        environment:
-            ENVIRONMENT: development
-        env_file:
-            - .env.development
-        tty: true
-        stdin_open: true
-        depends_on:
-            db:
-                condition: service_healthy
-
     db:
         container_name: 1m25_12-db
         hostname: $NS_MARIADB_HOSTNAME
@@ -63,4 +42,3 @@ services:
 
 volumes:
     db:
-    node_modules:

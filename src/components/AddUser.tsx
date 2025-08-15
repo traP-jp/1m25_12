@@ -1,5 +1,6 @@
 "use client";
 
+import { client } from "@/lib/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -7,9 +8,7 @@ export default function AddUser() {
 	const router = useRouter();
 
 	const fetchAsyncAddUser = async () => {
-		const response = await fetch("/api/me");
-
-		const clientUser = await response.json();
+		const clientUser = await client.me.get();
 
 		console.log(clientUser);
 
@@ -18,9 +17,7 @@ export default function AddUser() {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({
-				name: clientUser.userId ?? "unknown",
-			}),
+			body: JSON.stringify(clientUser),
 		});
 
 		router.refresh();

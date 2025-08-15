@@ -6,6 +6,7 @@
 		"dev": "next dev --turbopack",
 		"build": "next build",
 		"start": "next start",
+		"gen-client:traq": "openapi-generator-cli generate -g typescript-fetch -i https://raw.githubusercontent.com/traPtitech/traQ/refs/heads/master/docs/v3-api.yaml -o src/generated/traq",
 		"lint": "prettier --check ./src && next lint --max-warnings=0",
 		"format": "prettier --write ./src && next lint --fix"
 	},
@@ -16,12 +17,16 @@
 	"dependencies": {
 		"@prisma/adapter-mariadb": "^6.14.0",
 		"@prisma/client": "^6.14.0",
+		"axios": "^1.11.0",
 		"next": "15.4.6",
+		"next-auth": "5.0.0-beta.29",
 		"react": "19.1.0",
-		"react-dom": "19.1.0"
+		"react-dom": "19.1.0",
+		"traq-bot-ts": "^1.5.2"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
+		"@openapitools/openapi-generator-cli": "^2.22.0",
 		"@tailwindcss/postcss": "^4",
 		"@types/node": "^20",
 		"@types/react": "^19",
