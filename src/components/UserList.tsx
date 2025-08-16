@@ -8,6 +8,7 @@ export default async function UserList() {
 
 	const users = await Promise.all(
 		usersRaw.map(({ id, name }) => {
+			console.log(id, name);
 			if (!name) return Promise.reject();
 			return traqClient.users
 				.getUser(name)
