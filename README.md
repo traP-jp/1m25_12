@@ -40,7 +40,7 @@ pnpm db:down
 ### マイグレーション
 
 ```
-npx prisma migrate deploy
+pnpm db:migrate
 ```
 
 ## クライアント

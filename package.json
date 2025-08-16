@@ -8,6 +8,7 @@
 		"start": "next start",
 		"db:up": "docker compose --env-file .env.local up -d",
 		"db:down": "docker compose --env-file .env.local down",
+		"db:migrate": "dotenv -e .env.local -- prisma migrate deploy",
 		"gen-client:traq": "openapi-generator-cli generate -g typescript-fetch -i https://raw.githubusercontent.com/traPtitech/traQ/refs/heads/master/docs/v3-api.yaml -o src/generated/traq",
 		"lint": "prettier --check ./src && next lint --max-warnings=0",
 		"format": "prettier --write ./src && next lint --fix"
@@ -36,6 +37,7 @@
 		"@types/react-dom": "^19",
 		"@typescript-eslint/eslint-plugin": "^8.39.1",
 		"@typescript-eslint/parser": "^8.39.1",
+		"dotenv-cli": "^10.0.0",
 		"eslint": "^9.33.0",
 		"eslint-config-next": "15.4.6",
 		"eslint-config-prettier": "^10.1.8",
