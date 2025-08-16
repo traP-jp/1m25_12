@@ -1,6 +1,6 @@
 ## 準備
 
-```
+```bash
 npm install -g pnpm
 pnpm install
 npx prisma generate
@@ -10,7 +10,7 @@ npx prisma generate
 
 `.env.local`
 
-```
+```bash
 NS_MARIADB_HOSTNAME=db
 NS_MARIADB_PORT=3306
 NS_MARIADB_DATABASE=1m25_12
@@ -27,19 +27,19 @@ USER_NAME={your traQ id}
 
 ### 立ち上げ
 
-```
+```bash
 pnpm db:up
 ```
 
 ### 停止
 
-```
+```bash
 pnpm db:down
 ```
 
 ### マイグレーション
 
-```
+```bash
 pnpm db:migrate
 ```
 
@@ -47,7 +47,7 @@ pnpm db:migrate
 
 ### 立ち上げ
 
-```
+```bash
 pnpm dev
 ```
 
