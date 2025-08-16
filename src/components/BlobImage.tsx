@@ -19,7 +19,6 @@ export default function BlobImage({ blob, alt, ...props }: Props) {
 	return (
 		<Image
 			src={url}
-			height={10}
 			alt={alt}
 			{...props}
 		/>

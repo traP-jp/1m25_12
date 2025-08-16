@@ -8,9 +8,8 @@ export default async function UserList() {
 
 	const users = await Promise.all(
 		usersRaw.map(({ id, name }) => {
-			if (!name) return Promise.reject();
 			return traqClient.users
-				.getUser(name)
+				.getUser(name ?? "")
 				.then(response => response.json() as Promise<UserDetail>)
 				.catch(() => ({
 					id,
@@ -33,7 +32,7 @@ export default async function UserList() {
 						<p>{index}</p>
 						<TraqImage
 							fileId={iconFileId}
-							alt={name}
+							alt={name ?? "unknown"}
 							height={25}
 							width={25}
 						/>
