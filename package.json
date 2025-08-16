@@ -9,7 +9,6 @@
 		"db:up": "docker compose --env-file .env.local up -d",
 		"db:down": "docker compose --env-file .env.local down",
 		"db:migrate": "dotenv -e .env.local -- prisma migrate deploy",
-		"gen-client:traq": "openapi-generator-cli generate -g typescript-fetch -i https://raw.githubusercontent.com/traPtitech/traQ/refs/heads/master/docs/v3-api.yaml -o src/generated/traq",
 		"lint": "prettier --check ./src && next lint --max-warnings=0",
 		"format": "prettier --write ./src && next lint --fix"
 	},
