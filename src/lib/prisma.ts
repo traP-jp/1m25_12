@@ -6,5 +6,5 @@ export const prisma = new PrismaClient({
 			url: process.env.DATABASE_URL,
 		},
 	},
-	log: ["query"],
+	log: process.env.NODE_ENV === "development" ? ["query"] : [],
 });
