@@ -1,10 +1,11 @@
 import AddUser from "@/components/AddUser";
 import UserList from "@/components/UserList";
-export default async function Home() {
+
+export default function Home() {
 	return (
-		<div>
+		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 			<AddUser />
 			<UserList />
-		</div>
+		</section>
 	);
 }

@@ -13,6 +13,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
 	...compat.config({
 		ignorePatterns: ["generated/"],
+		rules: {
+			"@typescript-eslint/no-unused-expressions": ["error", { allowTernary: true }],
+		},
 	}),
 	...compat.extends("next/core-web-vitals", "next/typescript"),
 	eslintConfigPrettier,
