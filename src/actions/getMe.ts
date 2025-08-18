@@ -1,9 +1,11 @@
-"use client";
+"use server";
 
-import { client } from "@/lib/client";
-import { User } from "traq-bot-ts";
+import { headers } from "next/headers";
+import { unauthorized } from "next/navigation";
+import { getUser } from "./getUser";
 
 export async function getMe() {
-	const user = await client.get("/me");
-	return user.data as User;
+	const userName = (await headers()).get("X-Forwarded-User");
+	if (!userName) unauthorized();
+	return getUser(userName);
 }
