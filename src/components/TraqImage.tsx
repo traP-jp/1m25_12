@@ -1,22 +1,15 @@
-import { ImageProps } from "@heroui/image";
-import BlobImage from "./BlobImage";
-import { traqClient } from "@/lib/traq";
+import { getFilePath } from "@/lib/client";
+import { Image, ImageProps } from "@heroui/image";
 
 type Props = {
 	fileId: string;
 } & Omit<ImageProps, "src">;
 
-export default async function TraqImage({ fileId, ...props }: Props) {
-	const blob = await traqClient.files
-		.getFile(fileId)
-		.then(response => response.blob())
-		.catch(() => null);
-
-	if (!blob) return <></>;
-
+export default async function TraqImage({ fileId, alt, ...props }: Props) {
 	return (
-		<BlobImage
-			blob={blob}
+		<Image
+			src={getFilePath(fileId)}
+			alt={alt}
 			{...props}
 		/>
 	);
