@@ -12,8 +12,8 @@ services:
             MYSQL_PASSWORD: $NS_MARIADB_PASSWORD
             MYSQL_ROOT_PASSWORD: password
         env_file:
-          - .env
-          - .env.development
+            - .env
+            - .env.development
         ports:
             - "3306:3306"
         healthcheck:
