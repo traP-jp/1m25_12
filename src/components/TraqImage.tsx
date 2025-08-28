@@ -1,22 +1,22 @@
-import { ImageProps } from "@heroui/image";
-import BlobImage from "./BlobImage";
-import { traqClient } from "@/lib/traq";
+import { getFilePath } from "@/lib/client";
+import { Image, ImageProps } from "@/components/Image";
+import { getImageSize } from "@/actions/getImageSize";
 
 type Props = {
 	fileId: string;
 } & Omit<ImageProps, "src">;
 
-export default async function TraqImage({ fileId, ...props }: Props) {
-	const blob = await traqClient.files
-		.getFile(fileId)
-		.then(response => response.blob())
-		.catch(() => null);
-
-	if (!blob) return <></>;
+export default async function TraqImage({ fileId, alt, width, height, fill, ...props }: Props) {
+	if (!fill && (!width || !height)) {
+		const { width: defaultWidth, height: defaultHeight } = await getImageSize(fileId);
+		width ??= defaultWidth;
+		height ??= defaultHeight;
+	}
 
 	return (
-		<BlobImage
-			blob={blob}
+		<Image
+			src={getFilePath(fileId)}
+			{...{ alt, fill, width, height }}
 			{...props}
 		/>
 	);

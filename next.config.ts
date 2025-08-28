@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
 		authInterrupts: true,
 	},
 	images: {
-		remotePatterns: [new URL("https://q.trap.jp/api/v3/**")],
+		unoptimized: true,
 	},
 };
 
