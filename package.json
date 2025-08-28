@@ -9,7 +9,9 @@
 		"db:up": "docker compose --env-file .env.local up -d",
 		"db:down": "docker compose --env-file .env.local down",
 		"db:migrate": "dotenv -e .env.local -- prisma migrate deploy",
+		"db:migrate:reset": "dotenv -e .env.local -- prisma migrate reset",
 		"db:migrate:dev": "dotenv -e .env.local -- prisma migrate dev",
+		"db:studio": "dotenv -e .env.local -- prisma studio",
 		"lint": "prettier --check ./src && next lint --max-warnings=0",
 		"format": "prettier --write ./src && next lint --fix"
 	},

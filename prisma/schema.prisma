@@ -1,16 +1,115 @@
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-  output   = "../src/generated/prisma"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+    output        = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  name    String?
-  createdAt DateTime @default(now()) @map("created_at")
+    id        String   @id
+    name      String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    channels  Channel[]
+    reviews   Review[]
+    works     Work[]    @relation("user_work_mappings")
+    tags      Tag[]
+    bookmarks Work[]    @relation("user_bookmarks")
+
+    @@map("users")
+}
+
+model Channel {
+    id String
+
+    owner   User   @relation(fields: [ownerId], references: [id])
+    ownerId String @map("owner_id")
+
+    allowReviews Boolean @default(false)
+    nsfw         Boolean @default(false)
+
+    @@id([id, ownerId])
+    @@map("channels")
+}
+
+model Review {
+    id String @id @default(uuid(7))
+
+    author   User   @relation(fields: [authorId], references: [id])
+    authorId String @map("author_id")
+
+    work   Work   @relation(fields: [workId], references: [id])
+    workId String @map("work_id")
+
+    parent   Review?  @relation("parent_id", fields: [parentId], references: [id])
+    parentId String?  @map("parent_id")
+    children Review[] @relation("parent_id")
+
+    contents String @db.MediumText
+
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    hiddenAt  DateTime? @map("hidden_at")
+    deletedAt DateTime? @map("deleted_at")
+
+    @@map("reviews")
+}
+
+enum Category {
+    PICTURE
+    MOVIE
+    SOUND
+    GAME
+    WEB_APP
+    OTHERS
+}
+
+model Tag {
+    id String @id @default(uuid(7))
+
+    author   User   @relation(fields: [authorId], references: [id])
+    authorId String @map("author_id")
+
+    official Boolean @default(false)
+
+    color String @default("#000000")
+
+    works Work[] @relation("work_tag_mappings")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("tags")
+}
+
+model Work {
+    id      String @id
+    authors User[] @relation("user_work_mappings")
+
+    name        String @db.TinyText
+    description String @db.Text
+
+    source   String
+    links    String
+    category Category
+
+    viewCount Int @default(0) @map("view_count")
+
+    bookmarkUsers User[] @relation("user_bookmarks")
+
+    allowReviews Boolean @default(false) @map("allow_reviews")
+
+    reviews Review[]
+    tags    Tag[]    @relation("work_tag_mappings")
+
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+
+    @@map("works")
 }
