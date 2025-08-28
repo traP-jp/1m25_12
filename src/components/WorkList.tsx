@@ -1,0 +1,126 @@
+import { prisma } from "@/lib/prisma";
+import { traqClient } from "@/lib/traq";
+import { Card, CardFooter } from "@heroui/card";
+import { UserDetail } from "traq-bot-ts";
+import TraqImage from "./TraqImage";
+import { title } from "@/components/primitives";
+//pnpm add @heroui/avatarの実行が必要だった
+import { Avatar } from "@heroui/avatar";
+import { Button } from "@heroui/button";
+
+export const PenIcon = ({
+	fill = "currentColor",
+	height,
+	width,
+	...props
+}: React.SVGProps<SVGSVGElement>) => {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			width={width || 12}
+			height={height || 12}
+			{...props}
+		>
+			<g
+				fill="none"
+				stroke={fill}
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeMiterlimit={10}
+				strokeWidth={1.5}
+			>
+				<path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+			</g>
+		</svg>
+	);
+};
+
+export default async function UserList() {
+	const usersRaw = (await prisma.user.findMany()).toReversed();
+
+	const users = await Promise.all(
+		usersRaw.map(({ id, name, createdAt }) => {
+			return traqClient.users
+				.getUser(name ?? "")
+				.then(async response => ({
+					key: id,
+					...((await response.json()) as UserDetail),
+					createdAt,
+				}))
+				.catch(() => ({
+					key: id,
+					id,
+					name,
+					displayName: "",
+					iconFileId: "",
+					createdAt: new Date(),
+				}));
+		})
+	);
+
+	return (
+		<div>
+			<div className="mb-2">
+				<h2 className={title({ size: "sm" })}>Users</h2>
+			</div>
+
+			<div className="flex flex-wrap items-center justify-center gap-5">
+				{users.map(({ key, name, displayName, iconFileId }) => {
+					return (
+						<Card
+							isPressable
+							shadow="md"
+							className="col-span-12 sm:col-span-12 h-[300px]"
+							key={key}
+							// onClick={() => {
+							// 	console.log(name);
+							// }}
+						>
+							<TraqImage
+								removeWrapper
+								className="z-0  object-cover h-[200px]  w-[200px] rounded-b-none "
+								fileId={iconFileId}
+								alt={displayName}
+							/>
+							{/* <CardHeader className="absolute z-10 top-1 flex-col items-start!">
+								<p className="text-tiny text-black/60 uppercase font-bold">
+									{name}
+								</p>
+								<h4 className="text-black font-medium text-large">{displayName}</h4>
+							</CardHeader> */}
+							{/* ｚをつけないとクリックしたときの演出がでないのはなぜ？ */}
+							<CardFooter className="justify-between border-white/20 border-1 overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
+								<div className="flex items-end absolute bottom-18 left-1 right-1">
+									<Avatar
+										size="md"
+										className="m-1 mr-2 "
+										name={displayName}
+										src={
+											iconFileId
+												? `https://traq.niko.dev/api/v3/files/${iconFileId}`
+												: undefined
+										}
+									/>
+									<p className="mt-3 text-base text-black/100 ">@{name} </p>
+								</div>
+								<div className="flex items-end absolute  flex-col mt-4 text-left left-4 ">
+									<p className=" text-black font-medium text-lg">{displayName}</p>
+								</div>
+								<Button
+									size="sm"
+									color="secondary"
+									startContent={<PenIcon />}
+									variant="solid"
+									className="px-2 text-tiny absolute bottom-2 right-2"
+								>
+									レビューを書く
+								</Button>
+							</CardFooter>
+						</Card>
+					);
+				})}
+			</div>
+		</div>
+	);
+}
