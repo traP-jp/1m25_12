@@ -4,10 +4,8 @@ import { Card, CardFooter } from "@heroui/card";
 import { UserDetail } from "traq-bot-ts";
 import TraqImage from "./TraqImage";
 import { title } from "@/components/primitives";
-//pnpm add @heroui/avatarの実行が必要だった
-import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
-import  TrapIcon  from "./TrapIcon";
+import TrapIcon from "./TrapIcon";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -38,16 +36,15 @@ export const PenIcon = ({
 };
 
 export default async function UserList() {
-	const usersRaw = (await prisma.user.findMany()).toReversed();
+	const usersRaw = (await prisma.user.findMany({ take: 10 })).toReversed();
 
 	const users = await Promise.all(
-		usersRaw.map(({ id, name, createdAt }) => {
+		usersRaw.map(({ id, name }) => {
 			return traqClient.users
-				.getUser(name ?? "")
+				.getUser(id ?? "")
 				.then(async response => ({
 					key: id,
 					...((await response.json()) as UserDetail),
-					createdAt,
 				}))
 				.catch(() => ({
 					key: id,
@@ -74,33 +71,27 @@ export default async function UserList() {
 							shadow="md"
 							className="col-span-12 sm:col-span-12 h-[320px]"
 							key={key}
-							// onClick={() => {
-							// 	console.log(name);
-							// }}
 						>
 							<TraqImage
 								removeWrapper
-								className="z-0  object-cover h-[200px]  w-[200px] rounded-b-none "
+								className="z-0  object-cover h-[200px]  w-[200px] rounded-b-none"
 								fileId={iconFileId}
 								alt={displayName}
 							/>
-							{/* <CardHeader className="absolute z-10 top-1 flex-col items-start!">
-								<p className="text-tiny text-black/60 uppercase font-bold">
-									{name}
-								</p>
-								<h4 className="text-black font-medium text-large">{displayName}</h4>
-							</CardHeader> */}
-							{/* ｚをつけないとクリックしたときの演出がでないのはなぜ？ */}
 							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 								<div className="flex items-end absolute bottom-20 left-1 right-1">
 									<TrapIcon
 										fileId={iconFileId}
 										alt={displayName}
 									/>
-									<p className=" font-light mt-3 text-base text-black/80 dark:text-white/80 ">@{name} </p>
+									<p className=" font-light mt-3 text-base text-black/80 dark:text-white/80 ">
+										@{name}
+									</p>
 								</div>
 								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
-									<p className="  font-semibold text-base text-black/80 dark:text-white/80">作品名をいれる</p>
+									<p className="  font-semibold text-base text-black/80 dark:text-white/80">
+										作品名をいれる
+									</p>
 								</div>
 								<Button
 									size="sm"
