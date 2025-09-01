@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Image, ImageProps } from "@heroui/image";
+import { Image, ImageProps } from "@/components/Image";
 
 type Props = {
 	blob: Blob;

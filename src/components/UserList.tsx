@@ -40,14 +40,16 @@ export default async function UserList() {
 						<Card
 							isFooterBlurred
 							shadow="md"
-							className="col-span-12 sm:col-span-4 h-[220px]"
+							className="col-span-12 sm:col-span-4 h-[220px] w-[220px]"
 							key={key}
 						>
 							<TraqImage
 								removeWrapper
-								className="z-0 w-full h-full object-cover"
+								className="z-0 w-full h-full object-cover relative"
 								fileId={iconFileId}
 								alt={displayName}
+								loading="lazy"
+								fill={true}
 							/>
 							<CardHeader className="absolute z-10 top-1 flex-col items-start!">
 								<p className="text-tiny text-black/60 uppercase font-bold">
