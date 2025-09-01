@@ -7,6 +7,7 @@ import { title } from "@/components/primitives";
 //pnpm add @heroui/avatarの実行が必要だった
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
+import  TrapIcon  from "./TrapIcon";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -71,7 +72,7 @@ export default async function UserList() {
 						<Card
 							isPressable
 							shadow="md"
-							className="col-span-12 sm:col-span-12 h-[300px]"
+							className="col-span-12 sm:col-span-12 h-[320px]"
 							key={key}
 							// onClick={() => {
 							// 	console.log(name);
@@ -90,29 +91,23 @@ export default async function UserList() {
 								<h4 className="text-black font-medium text-large">{displayName}</h4>
 							</CardHeader> */}
 							{/* ｚをつけないとクリックしたときの演出がでないのはなぜ？ */}
-							<CardFooter className="justify-between border-white/20 border-1 overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
-								<div className="flex items-end absolute bottom-18 left-1 right-1">
-									<Avatar
-										size="md"
-										className="m-1 mr-2 "
-										name={displayName}
-										src={
-											iconFileId
-												? `https://traq.niko.dev/api/v3/files/${iconFileId}`
-												: undefined
-										}
+							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
+								<div className="flex items-end absolute bottom-20 left-1 right-1">
+									<TrapIcon
+										fileId={iconFileId}
+										alt={displayName}
 									/>
-									<p className="mt-3 text-base text-black/100 ">@{name} </p>
+									<p className=" font-light mt-3 text-base text-black/80 dark:text-white/80 ">@{name} </p>
 								</div>
-								<div className="flex items-end absolute  flex-col mt-4 text-left left-4 ">
-									<p className=" text-black font-medium text-lg">{displayName}</p>
+								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+									<p className="  font-semibold text-base text-black/80 dark:text-white/80">作品名をいれる</p>
 								</div>
 								<Button
 									size="sm"
 									color="secondary"
 									startContent={<PenIcon />}
 									variant="solid"
-									className="px-2 text-tiny absolute bottom-2 right-2"
+									className="font-normal px-2 text-xs absolute bottom-2 right-2"
 								>
 									レビューを書く
 								</Button>
