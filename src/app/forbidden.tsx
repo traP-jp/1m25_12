@@ -1,1 +1,1 @@
-export { default } from "@/app/forbidden/page";
+export { default } from "@/app/(main)/forbidden/page";

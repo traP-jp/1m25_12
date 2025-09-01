@@ -9,13 +9,12 @@ export default async function UserList() {
 	const usersRaw = (await prisma.user.findMany()).toReversed();
 
 	const users = await Promise.all(
-		usersRaw.map(({ id, name, createdAt }) => {
+		usersRaw.map(({ id, name }) => {
 			return traqClient.users
 				.getUser(name ?? "")
 				.then(async response => ({
 					key: id,
 					...((await response.json()) as UserDetail),
-					createdAt,
 				}))
 				.catch(() => ({
 					key: id,
@@ -23,7 +22,6 @@ export default async function UserList() {
 					name,
 					displayName: "",
 					iconFileId: "",
-					createdAt: new Date(),
 				}));
 		})
 	);
@@ -35,7 +33,7 @@ export default async function UserList() {
 			</div>
 
 			<div className="flex flex-wrap items-center justify-center gap-4">
-				{users.map(({ key, name, displayName, iconFileId, createdAt }) => {
+				{users.map(({ key, name, displayName, iconFileId }) => {
 					return (
 						<Card
 							isFooterBlurred
@@ -59,16 +57,7 @@ export default async function UserList() {
 							</CardHeader>
 							<CardFooter className="justify-between border-white/20 border-1 overflow-hidden py-1 absolute rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10 ">
 								<p className="text-tiny text-black/80">No. {key}</p>
-								<p className="text-tiny text-white/80 w-fit flex gap-1">
-									<span>
-										{createdAt.toLocaleDateString("ja-JP", {
-											year: "numeric",
-											month: "2-digit",
-											day: "2-digit",
-										})}
-									</span>
-									<span>{createdAt.toLocaleTimeString("ja-JP")}</span>
-								</p>
+								<p className="text-tiny text-white/80 w-fit flex gap-1"></p>
 							</CardFooter>
 						</Card>
 					);

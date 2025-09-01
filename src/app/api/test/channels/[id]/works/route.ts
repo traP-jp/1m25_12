@@ -1,4 +1,4 @@
-import { getChannelMessages } from "@/actions/traq/getChannelMessages";
+import { getChannelMessages } from "@/actions/traq/channels";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
