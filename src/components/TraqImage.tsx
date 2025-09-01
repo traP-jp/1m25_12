@@ -1,6 +1,6 @@
 import { getFilePath } from "@/lib/client";
 import { Image, ImageProps } from "@/components/Image";
-import { getImageSize } from "@/actions/getImageSize";
+import { getImageSize } from "@/actions/traq/getImageSize";
 
 type Props = {
 	fileId: string;

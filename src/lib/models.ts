@@ -1,3 +1,6 @@
+import { $Enums } from "@/generated/prisma";
+export const { Category } = $Enums;
+
 export type User = {
 	id: string;
 	name: string;
@@ -32,17 +35,16 @@ export type Review = {
 
 export type Work = {
 	id: string;
-	authors: User[];
-	name: string;
-	description: string;
-	source: string;
-	links: string;
-	category: Category;
+	authors: string[];
+	name?: string;
+	description?: string;
+	links: string[];
+	category?: keyof typeof Category;
 	viewCount: number;
-	bookmarkUsers: User[];
+	bookmarkUsers: string[];
 	allowReviews: boolean;
-	reviews: Review[];
-	tags: Tag[];
+	reviews: string[];
+	tags: string[];
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt?: Date;
@@ -57,12 +59,3 @@ export type Tag = {
 	createdAt: Date;
 	updatedAt: Date;
 };
-
-export enum Category {
-	PICTURE,
-	MOVIE,
-	SOUND,
-	GAME,
-	WEB_APP,
-	OTHERS,
-}
