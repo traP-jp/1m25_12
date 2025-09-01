@@ -12,29 +12,40 @@ datasource db {
 model User {
     id        String   @id
     name      String
-    createdAt DateTime @default(now()) @map("created_at")
+
     updatedAt DateTime @updatedAt @map("updated_at")
 
-    channels  Channel[]
+    channels  UserChannel[]
     reviews   Review[]
     works     Work[]    @relation("user_work_mappings")
     tags      Tag[]
     bookmarks Work[]    @relation("user_bookmarks")
 
     @@map("users")
+    @@index([name])
 }
 
-model Channel {
-    id String
 
-    owner   User   @relation(fields: [ownerId], references: [id])
+model Channel {
+    id String @id @default(uuid(7))
+
+    works Work[]
+    users UserChannel[]
+}
+
+model UserChannel {
+    owner User  @relation(fields: [ownerId], references: [id])
     ownerId String @map("owner_id")
+
+    channel Channel @relation(fields: [channelId], references: [id])
+    channelId String @map("channel_id")
 
     allowReviews Boolean @default(false)
     nsfw         Boolean @default(false)
 
-    @@id([id, ownerId])
-    @@map("channels")
+    updatedAt DateTime @updatedAt
+
+    @@id([channelId, ownerId])
 }
 
 model Review {
@@ -89,14 +100,16 @@ model Tag {
 
 model Work {
     id      String @id
+
     authors User[] @relation("user_work_mappings")
 
-    name        String @db.TinyText
-    description String @db.Text
+    channel  Channel  @relation(fields: [channelId], references: [id])
+    channelId String @map("channel_id")
 
-    source   String
-    links    String
-    category Category
+    name        String?
+    description String?
+
+    category Category?
 
     viewCount Int @default(0) @map("view_count")
 

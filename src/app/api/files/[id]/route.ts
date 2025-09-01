@@ -1,5 +1,5 @@
-import { getFileBlob } from "@/actions/getFileBlob";
-import { getFileMeta } from "@/actions/getFileMeta";
+import { getFileBlob } from "@/actions/traq/getFileBlob";
+import { getFileMeta } from "@/actions/traq/getFileMeta";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
