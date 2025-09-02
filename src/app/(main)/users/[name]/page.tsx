@@ -32,7 +32,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	return (
 		<div>
 			<div>
-				<div className="mb-1">
+				<div className="mb-3">
 					{/* ここから作品戻るリンク */}
 					<Link
 						href="/works"
@@ -57,7 +57,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				</div>
 				<div className="flex gap-8">
 					{/* ここからユーザー情報 */}
-					<div className="flex flex-col gap-4">
+					<div className="w-2/3 flex flex-col justify-start gap-4">
 						<div className="flex flex-row">
 							<Avatar
 								src={getFilePath(iconFileId)}
@@ -65,16 +65,18 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							/>
 							<div className="flex flex-col ml-4 justify-center">
 								<span className="text-2xl">{displayName}</span>
-								<span className="text-xl text-gray-500">@{name}</span>
-								<span className="text-xl">所属アイコン</span>
+								<span className="text-xl text-gray-500 mb-4">@{name}</span>
+							</div>
+							<div className="justify-center text-left">
+								<span className="text-xl">所属</span>
 							</div>
 						</div>
-						<div>
-							<p>{bio.substring(0, 100)}...</p>
+						<div className="w-full break-words">
+							<p>{bio.substring(0, 200)}...</p>
 						</div>
 					</div>
-					<div>
-						<h2 className="text-xl">プログレスチャンネル</h2>
+					<div className="max-w-sm flex flex-col gap-4">
+						<h2 className="text-xl mt-4">プログレスチャンネル</h2>
 						<ul className="flex flex-col">
 							{channelPaths.map(path => (
 								<li
