@@ -14,6 +14,11 @@ export async function loadWorks(formData: FormData) {
 		create: { id: channelId },
 	});
 
+	await prisma.userChannel.createMany({
+		data: messages.map(({ channelId, userId }) => ({ channelId, ownerId: userId })),
+		skipDuplicates: true,
+	});
+
 	await prisma.$transaction(
 		messages
 			.map(({ id, userId, createdAt, updatedAt }) => [
