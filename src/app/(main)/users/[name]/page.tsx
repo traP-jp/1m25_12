@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Avatar } from "@heroui/avatar";
 import { getFilePath } from "@/lib/client";
 import { prisma } from "@/lib/prisma";
+import { getUserTeams } from "@/actions/getTeamsBelong";
 
 type Params = {
 	name: string;
@@ -27,6 +28,8 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	);
 	console.log(channelPaths);
 
+	const teams = await getUserTeams(id);
+
 	return (
 		<div className="flex gap-8">
 			<div className="flex flex-col gap-4">
@@ -45,7 +48,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				</div>
 			</div>
 			<div>
-				<h2 className="text-2xl">チャンネル</h2>
+				<h2 className="text-2xl">チャンネル一覧</h2>
 				<ul className="flex flex-col">
 					{channelPaths.map(path => (
 						<li
@@ -54,6 +57,14 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						>
 							{path}
 						</li>
+					))}
+				</ul>
+			</div>
+			<div>
+				<h2 className="text-2xl">所属チーム一覧</h2>
+				<ul className="flex flex-col">
+					{teams.map((team, index) => (
+						<li key={index}>{team}</li>
 					))}
 				</ul>
 			</div>
