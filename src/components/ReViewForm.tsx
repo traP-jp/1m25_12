@@ -32,8 +32,8 @@ export default function ReviewForm() {
   };
 
   const evaluates = [
-    { label: "Good", value: "good" },
-    { label: "More", value: "more" },
+    { label: "Good", value: "good",color:"bg-blue-400" },
+    { label: "More", value: "more" ,color:"bg-pink-400"},
   ];
 
   return (
@@ -41,24 +41,24 @@ export default function ReviewForm() {
       <h1 className="text-2xl font-bold">レビュー</h1>
       <div className="flex w-full flex-col gap-2">
         <Autocomplete
-          label="評価を選択"
+          label="レビューの種類"
           className="max-w-xs"
           onSelectionChange={(key) => setEvaluation(key as string)}
         >
           {evaluates.map((item) => (
-            <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
+            <AutocompleteItem key={item.value} >{item.label}</AutocompleteItem>
           ))}
         </Autocomplete>
-        <div className="flex items-start gap-2">
+        <div className="flex items-center gap-2">
           <Textarea
             isClearable
             className="flex-1"
             placeholder="レビューを入力してください"
             variant="faded"
-            value={comment}
+           
           />
           <Button
-            size="lg"
+            size="md"
             radius="full"
             color="secondary"
             startContent={<SendIcon />}
