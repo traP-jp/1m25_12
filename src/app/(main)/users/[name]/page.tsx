@@ -20,7 +20,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const { id, displayName, iconFileId } = await getUser(name).catch(notFound);
 	const { bio } = await getUserInfo(id).catch(notFound);
 
-	console.log(id);
 	const channels = await prisma.userChannel.findMany({
 		where: { ownerId: id },
 		include: { channel: true },
@@ -29,7 +28,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const channelPaths = await Promise.all(
 		channels.map(channel => getChannelPath(channel.channelId))
 	);
-	console.log(channelPaths);
 
 	const userTeams = await getUserTeams(id);
 	const ALL_TEAM_NAMES = ["graphics", "sound", "algorithm", "ctf", "kaggle", "sysad", "game"];
@@ -38,7 +36,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		<div>
 			<div>
 				<div className="mb-3">
-					{/* ここから作品戻るリンク */}
 					<Link
 						href="/works"
 						className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -61,7 +58,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					</Link>
 				</div>
 				<div className="flex gap-8">
-					{/* ここからユーザー情報 */}
 					<div className="w-2/3 flex flex-col justify-start gap-4">
 						<div className="flex flex-row">
 							<Avatar
@@ -90,11 +86,11 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							</div>
 						</div>
 						<div className="w-full break-words">
-							<p>{bio.substring(0, 200)}...</p>
+							<p>{bio.length > 200 ? bio.substring(0, 200) + "..." : bio}</p>
 						</div>
 					</div>
 					<div className="max-w-sm flex flex-col gap-4">
-						<h2 className="text-xl mt-4">プログレスチャンネル</h2>
+						<h2 className="text-xl mt-4">チャンネル一覧</h2>
 						<ul className="flex flex-col">
 							{channelPaths.map(path => (
 								<li
@@ -104,7 +100,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 									{path}
 								</li>
 							))}
-							<h2 className="text-xl">所属チーム</h2>
 						</ul>
 					</div>
 				</div>
