@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/components/Link";
 import { WorksTabs } from "@/components/WorksTabs";
 import TeamIcon from "@/components/TeamIcon";
-import { getUserTeams } from "@/actions/getUserTeams";
+import { getTeamsBelong } from "@/actions/getTeamsBelong";
 
 type Params = {
 	name: string;
@@ -31,7 +31,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	);
 	console.log(channelPaths);
 
-	const userTeams = await getUserTeams(id);
+	const userTeams = await getTeamsBelong(id);
 	const ALL_TEAM_NAMES = ["graphics", "sound", "algorithm", "ctf", "kaggle", "sysad", "game"];
 
 	return (
