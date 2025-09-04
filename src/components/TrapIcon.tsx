@@ -7,7 +7,7 @@ type Props = {
 	fileId: string;
 } & Omit<ImageProps, "src">;
 
-export default async function TraqIcon({ fileId, ...props }: Props) {
+export default async function TrapIcon({ fileId, ...props }: Props) {
 	const blob = await traqClient.files
 		.getFile(fileId)
 		.then(response => response.blob())

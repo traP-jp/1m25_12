@@ -1,5 +1,7 @@
 import { heroui } from "@heroui/theme";
 
+import { iconsPlugin, getIconCollections } from "@egoist/tailwindcss-icons";
+
 /** @type {import('tailwindcss').Config} */
 const config = {
 	content: [
@@ -16,7 +18,12 @@ const config = {
 		},
 	},
 	darkMode: "class",
-	plugins: [heroui()],
+	plugins: [
+		heroui(),
+	iconsPlugin({
+  collections: getIconCollections(["tabler", "lucide","material-symbols"])
+})
+	],
 };
 
 module.exports = config;
