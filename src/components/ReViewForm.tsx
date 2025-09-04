@@ -20,16 +20,18 @@ export default function ReviewForm() {
   const [comment, setComment] = useState("");
   const [evaluation, setEvaluation] = useState<string | null>(null);
 
-  // Client Component内なのでイベントハンドラを定義できる
-  const handleClear = () => {
+ const handleSubmit = () => {
+    // フォームが有効な場合のみ実行
+    if (!comment || !evaluation) return;
+    
+    console.log("Submitting review:", { evaluation, comment });
+    // TODO: ここでAPIを呼び出してレビューをサーバーに送信する
+    
+    // 送信後にフォームをクリア
     setComment("");
+    setEvaluation(null); 
   };
 
-  const handleSubmit = () => {
-    // ここでAPIを呼び出してレビューをサーバーに送信する
-    console.log("Submitting review:", { evaluation, comment });
-    // 例: await fetch('/api/reviews', { method: 'POST', body: JSON.stringify({ workId, evaluation, comment }) });
-  };
 
   const evaluates = [
     { label: "Good", value: "good",color:"bg-blue-400" },
@@ -43,6 +45,7 @@ export default function ReviewForm() {
         <Autocomplete
           label="レビューの種類"
           className="max-w-xs"
+          color = {evaluation === "more" ? "danger" : "primary" }
           onSelectionChange={(key) => setEvaluation(key as string)}
         >
           {evaluates.map((item) => (
@@ -55,7 +58,8 @@ export default function ReviewForm() {
             className="flex-1"
             placeholder="レビューを入力してください"
             variant="flat"
-           
+            value={comment}      
+            onValueChange={setComment}     
           />
           <Button
             size="md"
@@ -63,6 +67,7 @@ export default function ReviewForm() {
             color="secondary"
             startContent={<SendIcon />}
             onPress={handleSubmit}
+            isDisabled={!comment || !evaluation}
           >
             送信
           </Button>
