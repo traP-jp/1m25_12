@@ -8,6 +8,8 @@ import { getFilePath } from "@/lib/client";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/components/Link";
 import { WorksTabs } from "@/components/WorksTabs";
+import TeamIcon from "@/components/TeamIcon";
+import { getUserTeams } from "@/actions/getUserTeams";
 
 type Params = {
 	name: string;
@@ -28,6 +30,9 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		channels.map(channel => getChannelPath(channel.channelId))
 	);
 	console.log(channelPaths);
+
+	const userTeams = await getUserTeams(id);
+	const ALL_TEAM_NAMES = ["graphics", "sound", "algorithm", "ctf", "kaggle", "sysad", "game"];
 
 	return (
 		<div>
@@ -69,6 +74,21 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							</div>
 							<div className="justify-center text-left">
 								<span className="text-xl">所属</span>
+								<ul className="flex flex-wrap gap-2 mt-2">
+									{ALL_TEAM_NAMES.map(teamName => {
+										const isMember = userTeams.includes(teamName);
+										return (
+											<li
+												key={teamName}
+												className={`transition-all duration-300 ${
+													!isMember ? "grayscale opacity-40" : ""
+												}`}
+											>
+												<TeamIcon teamName={teamName} />
+											</li>
+										);
+									})}
+								</ul>
 							</div>
 						</div>
 						<div className="w-full break-words">
