@@ -54,7 +54,7 @@ export default function ReviewForm() {
             isClearable
             className="flex-1"
             placeholder="レビューを入力してください"
-            variant="faded"
+            variant="flat"
            
           />
           <Button
