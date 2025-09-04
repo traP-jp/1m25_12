@@ -80,9 +80,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 										return (
 											<li
 												key={teamName}
-												className={`transition-all duration-300 ${
-													!isMember ? "grayscale opacity-40" : ""
-												}`}
+												className={`${!isMember ? "opacity-20" : ""}`}
 											>
 												<TeamIcon teamName={teamName} />
 											</li>
