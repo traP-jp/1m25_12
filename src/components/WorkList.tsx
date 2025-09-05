@@ -35,7 +35,7 @@ export const PenIcon = ({
 	);
 };
 
-export default async function UserList() {
+export default async function WorkList() {
 	const usersRaw = (await prisma.user.findMany({ take: 10 })).toReversed();
 
 	const users = await Promise.all(
@@ -69,12 +69,12 @@ export default async function UserList() {
 						<Card
 							isPressable
 							shadow="md"
-							className="col-span-12 sm:col-span-12 h-[320px]"
+							className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
 							key={key}
 						>
 							<TraqImage
 								removeWrapper
-								className="z-0  object-cover h-[200px]  w-[200px] rounded-b-none"
+								className="object-cover h-[200px]  w-[200px] rounded-b-none "
 								fileId={iconFileId}
 								alt={displayName}
 							/>
@@ -84,7 +84,7 @@ export default async function UserList() {
 										fileId={iconFileId}
 										alt={displayName}
 									/>
-									<p className=" font-light mt-3 text-base text-black/80 dark:text-white/80 ">
+									<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
 										@{name}
 									</p>
 								</div>
