@@ -17,7 +17,7 @@ import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { GithubIcon } from "@/components/Icons";
 import { Input } from "@heroui/input";
 import { Sidebar } from "./Sidebar";
-
+import {Image} from "@heroui/image";
 export const Navbar = () => {
 
 	const [query, setQuery] = useState('');
@@ -55,7 +55,11 @@ export const Navbar = () => {
 						className="flex justify-start items-center gap-1"
 						href="/"
 					>
-						<p className="font-bold text-inherit">1m25_12</p>
+						<Image
+  src="/logo1.svg"
+  alt="Logo"
+  className="h-8 w-auto"
+/>
 					</Link>
 				</NavbarBrand>
 			</NavbarContent>
