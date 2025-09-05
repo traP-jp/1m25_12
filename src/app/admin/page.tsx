@@ -37,6 +37,10 @@ export default async function AdminPage() {
 				channelId="8bd9e07a-2c6a-49e6-9961-4f88e83b4918"
 				category="Sound"
 			/>
+			<LoadWorks 
+				channelId="cde0fe1b-f225-415a-b302-0c7a7ab754e2"
+				category="Game"
+			/>
 		</div>
 	);
 }
