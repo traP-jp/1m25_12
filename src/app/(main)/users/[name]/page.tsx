@@ -29,8 +29,16 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		channels.map(channel => getChannelPath(channel.channelId))
 	);
 
-	const userTeams = await getUserTeams(id);
-	const ALL_TEAM_NAMES = ["graphics", "sound", "algorithm", "ctf", "kaggle", "sysad", "game"];
+	const userTeamIds = await getUserTeams(id);
+	const ALL_TEAMS = [
+		{ id: "867b3529-696f-4bd1-af53-1947eba92e77", name: "graphics" },
+		{ id: "cb977ab2-85fa-4953-ac4d-809eaef427e6", name: "sound" },
+		{ id: "280bf56d-fa22-46bc-8dcc-6367d600d873", name: "algorithm" },
+		{ id: "af240e80-8526-4f21-925e-b20eded06284", name: "game" },
+		{ id: "ec54d385-e5e7-4554-8aa2-878ebedc9db0", name: "kaggle" },
+		{ id: "f86db5ec-dc02-4885-aa0a-732bb229a1b5", name: "sysad" },
+		{ id: "c5670065-75d4-4851-bfba-9ff05201fc44", name: "ctf" },
+	];
 
 	return (
 		<div>
@@ -71,14 +79,18 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							<div className="justify-center text-left">
 								<span className="text-xl">所属</span>
 								<ul className="flex flex-wrap gap-2 mt-2">
-									{ALL_TEAM_NAMES.map(teamName => {
-										const isMember = userTeams.includes(teamName);
+									{ALL_TEAMS.map(team => {
+										const isMember = userTeamIds.includes(team.id);
 										return (
 											<li
-												key={teamName}
-												className={`${!isMember ? "opacity-20" : ""}`}
+												key={team.id}
+												className={
+													isMember
+														? ""
+														: "grayscale brightness-0 opacity-20"
+												}
 											>
-												<TeamIcon teamName={teamName} />
+												<TeamIcon teamName={team.name} />
 											</li>
 										);
 									})}

@@ -1,13 +1,9 @@
 import { getUserInfo } from "./traq/users";
-import { getGroup } from "./traq/groups";
+// import { getGroup } from "./traq/groups";
+// import { use } from "react";
 
 export async function getUserTeams(userId: string) {
-	const { groups } = await getUserInfo(userId);
-
-	return await Promise.all(
-		groups.map(async group => {
-			const { name } = await getGroup(group);
-			return name;
-		})
-	);
+	const user_groups: string[] = [];
+	user_groups.push(...(await getUserInfo(userId)).groups);
+	return user_groups;
 }
