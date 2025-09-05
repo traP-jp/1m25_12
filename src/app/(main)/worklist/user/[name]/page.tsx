@@ -19,15 +19,15 @@ type PageProps = {
 };
 
 type Params = {
-    userId: string;
+    name: string;
 
 };
 
 const PAGE_SIZE = 12; // 1ページあたりの表示件数
 
 export default async function WorkPage({ params }: { params: Promise<Params> }) {
-    const { userId } = await params;
+    const { name } = await params;
 
-    redirect(`/worklist/user/${userId}/1`);
+    redirect(`/worklist/user/${name}/1`);
 
 }

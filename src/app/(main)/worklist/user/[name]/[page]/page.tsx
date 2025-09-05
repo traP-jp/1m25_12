@@ -14,6 +14,7 @@ import { title } from "@/components/primitives";
 import { Work } from "@/generated/prisma";
 import Pagination from '@/components/WorkList_Pagination_User';
 import { redirect } from "next/navigation";
+import { getUser } from "@/actions/traq/users";
 
 type PageProps = {
   searchParams: {
@@ -22,19 +23,24 @@ type PageProps = {
 };
 
 type Params = {
-    userId: string;
+    name: string;
     page:number;
 };
 
 const PAGE_SIZE = 12; // 1ページあたりの表示件数
 
 export default async function WorkPage({ params }: { params: Promise<Params> }) {
-    const { userId,page  } = await params;
-    console.log(page);
+    const {name,page} = await params;
+ 
+    console.log(name);
     // pageがundefinedやnullの場合は1にリダイレクト
-    if (!page) {
-        redirect(`/worklist/user/${userId}/1`);
-    }
+    const user = await getUser(name).catch(notFound);
+    if (!user) return; // 念のため
+    
+
+    const id = user.id;
+
+
     const currentPage = Number(page) || 1;
 
     // 単一のクエリで必要なデータをすべて取得 (N+1問題の解決)
@@ -44,7 +50,7 @@ export default async function WorkPage({ params }: { params: Promise<Params> }) 
         where: {
     authors: {
       some: {
-        id: userId
+        id: id
       }
     }
   },
@@ -63,11 +69,7 @@ export default async function WorkPage({ params }: { params: Promise<Params> }) 
 
     const totalPages = Math.ceil(totalWorks / PAGE_SIZE);
 
-        if (page > totalPages) {
-        redirect(`/worklist/user/${userId}/1`);
-    }
 
-    // console.log(worksRaw);
 const worksdetail = await Promise.all(
 
     worksRaw.map(async (work) => {
@@ -93,12 +95,11 @@ const fileId = await traqClient.users
         }));
 
 const iconfileid = fileId.iconFileId;
-// console.log(fileid);
 return {work,fileid,iconfileid,content};
 
  })
 );
-const userdetail : UserDetail= await getUserInfo(userId ?? "");
+const userdetail : UserDetail= await getUserInfo(id ?? "");
 
 
 console.log(worksdetail);
@@ -107,7 +108,7 @@ console.log(worksRaw.length);
     return (
         <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
             <div className="mb-2">
-            <h2 className={title({ size: "sm" })}>{userdetail.name}の一覧</h2>
+            <h2 className={title({ size: "sm" })}>{userdetail.name}の作品一覧</h2>
             </div>
             <WorkList
             workdetails={worksdetail}

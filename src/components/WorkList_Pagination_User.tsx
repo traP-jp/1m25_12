@@ -10,11 +10,11 @@ type Props = {
 export default function Pagination_user({ totalPages }: Props) {
   const router = useRouter();
   const params = useParams();
-  const userId = params.userId as string;
+  const name = params.name as string;
   const currentPage = Number(params.page) || 1;
 
   const handleChange = (page: number) => {
-    router.push(`/worklist/user/${userId}/${page}`);
+    router.push(`/worklist/user/${name}/${page}`);
   };
 
   return (
