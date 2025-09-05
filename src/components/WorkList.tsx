@@ -1,4 +1,3 @@
-
 import { prisma } from "@/lib/prisma";
 import { traqClient } from "@/lib/traq";
 import { Card, CardFooter } from "@heroui/card";
@@ -6,8 +5,9 @@ import { UserDetail } from "traq-bot-ts";
 import TraqImage from "./TraqImage";
 import { Button } from "@heroui/button";
 import TrapIcon from "./TrapIcon";
+import Link from "next/link";
 
-import type { Work } from '@prisma/client';
+import type { Work } from "@prisma/client";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -38,66 +38,72 @@ export const PenIcon = ({
 };
 
 type detail = {
-  work: Work;
-  fileid: string[];
-  iconfileid:string;
+	work: Work;
+	fileid: string[];
+	iconfileid: string;
+	content: string;
 };
-
 
 type Props = {
-	workdetails:detail[];
+	workdetails: detail[];
+	totalcount: number;
 };
 
+const PAGE_SIZE = 12; // 1ページあたりの表示件数
 
-export default function WorkList({ workdetails }: Props) {
-
-
+export default function WorkList({ workdetails, totalcount }: Props) {
 	return (
 		<div>
-
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{workdetails.map(({work,fileid,iconfileid}) => {
+				{workdetails.map(({ work, fileid, iconfileid, content }) => {
 					return (
-						<Card
-							isPressable
-							shadow="md"
-							className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
+						<Link
+							href={`/works/${work.id}`}
 							key={work.id}
 						>
-							
-							<TraqImage
-								removeWrapper
-								className="object-cover h-[200px] w-full rounded-b-none "
-								fileId={fileid[0]}
-								alt={work.description}
-								height={200}
-							/>
-							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
-								<div className="flex items-end absolute bottom-20 left-1 right-1">
-									<TrapIcon
-										fileId={iconfileid}
-										alt={work.authors[0].name}
-									/>
-									<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
-										@{work.authors[0].name}
-									</p>
-								</div>
-								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
-									<p className="  font-light text-sm text-black/80 dark:text-white/80">
-										{work.description}
-									</p>
-								</div>
-								<Button
-									size="sm"
-									color="secondary"
-									startContent={<PenIcon />}
-									variant="solid"
-									className="font-normal px-2 text-xs absolute bottom-2 right-2"
-								>
-									レビューを書く
-								</Button>
-							</CardFooter>
-						</Card>
+							<Card
+								isPressable
+								shadow="md"
+								className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
+								key={work.id}
+								
+							>
+								<TraqImage
+									removeWrapper
+									className="object-cover h-[200px] w-full rounded-b-none "
+									fileId={fileid[0]}
+									alt={work.description}
+									height={200}
+								/>
+								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
+									<div className="flex items-end absolute bottom-20 left-1 right-1">
+										<TrapIcon
+											fileId={iconfileid}
+											alt={work.authors[0].name}
+										/>
+										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
+											@{work.authors[0].name}
+										</p>
+									</div>
+									<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+										<p className="  font-light text-xs text-black/80 dark:text-white/80">
+											{(work.description ?? content).length > 32
+												? (work.description ?? content).slice(0, 32) + "..."
+												: (work.description ?? content)}
+										</p>
+									</div>
+									<Button
+										size="sm"
+										color="secondary"
+										startContent={<PenIcon />}
+										variant="solid"
+										className="font-normal px-2 text-xs absolute bottom-2 right-2"
+									>
+										レビューを書く
+									</Button>
+								</CardFooter>
+							</Card>
+						</Link>
 					);
 				})}
 			</div>
