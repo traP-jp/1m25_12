@@ -11,13 +11,13 @@ import {
 import { Link } from "@/components/Link";
 import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
-import { useState } from 'react';
 import { siteConfig } from "../config/site";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { GithubIcon } from "@/components/Icons";
 import { Input } from "@heroui/input";
 import { Sidebar } from "./Sidebar";
 import {Image} from "@heroui/image";
+import { useState } from 'react';
 export const Navbar = () => {
 
 	const [query, setQuery] = useState('');
@@ -34,11 +34,14 @@ export const Navbar = () => {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 	return (
 		<HeroUINavbar
 			maxWidth="xl"
 			position="sticky"
-		>
+			isMenuOpen={isMenuOpen} 
+			onMenuOpenChange={setIsMenuOpen}
+		>	<NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
 			<NavbarContent
 				className="basis-1/5 sm:basis-full"
 				justify="start"
@@ -47,9 +50,7 @@ export const Navbar = () => {
 					as="li"
 					className="gap-3 max-w-fit"
 				>
-					<NavbarMenuToggle 
-					className="" 
-					/>
+			
 
 					<Link
 						className="flex justify-start items-center gap-1"
@@ -58,7 +59,7 @@ export const Navbar = () => {
 						<Image
   src="/logo1.svg"
   alt="Logo"
-  className="h-8 w-auto"
+  className="h-8 w-auto object-contain"
 />
 					</Link>
 				</NavbarBrand>
