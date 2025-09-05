@@ -1,11 +1,13 @@
+
 import { prisma } from "@/lib/prisma";
 import { traqClient } from "@/lib/traq";
 import { Card, CardFooter } from "@heroui/card";
 import { UserDetail } from "traq-bot-ts";
 import TraqImage from "./TraqImage";
-import { title } from "@/components/primitives";
 import { Button } from "@heroui/button";
 import TrapIcon from "./TrapIcon";
+
+import type { Work } from '@prisma/client';
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -35,62 +37,54 @@ export const PenIcon = ({
 	);
 };
 
-export default async function WorkList() {
-	const usersRaw = (await prisma.user.findMany({ take: 10 })).toReversed();
+type detail = {
+  work: Work;
+  fileid: string[];
+  iconfileid:string;
+};
 
-	const users = await Promise.all(
-		usersRaw.map(({ id, name }) => {
-			return traqClient.users
-				.getUser(id ?? "")
-				.then(async response => ({
-					key: id,
-					...((await response.json()) as UserDetail),
-				}))
-				.catch(() => ({
-					key: id,
-					id,
-					name,
-					displayName: "",
-					iconFileId: "",
-					createdAt: new Date(),
-				}));
-		})
-	);
+
+type Props = {
+	workdetails:detail[];
+};
+
+
+export default function WorkList({ workdetails }: Props) {
+
 
 	return (
 		<div>
-			<div className="mb-2">
-				<h2 className={title({ size: "sm" })}>Users</h2>
-			</div>
 
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{users.map(({ key, name, displayName, iconFileId }) => {
+				{workdetails.map(({work,fileid,iconfileid}) => {
 					return (
 						<Card
 							isPressable
 							shadow="md"
 							className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
-							key={key}
+							key={work.id}
 						>
+							
 							<TraqImage
 								removeWrapper
-								className="object-cover h-[200px]  w-[200px] rounded-b-none "
-								fileId={iconFileId}
-								alt={displayName}
+								className="object-cover h-[200px] w-full rounded-b-none "
+								fileId={fileid[0]}
+								alt={work.description}
+								height={200}
 							/>
 							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 								<div className="flex items-end absolute bottom-20 left-1 right-1">
 									<TrapIcon
-										fileId={iconFileId}
-										alt={displayName}
+										fileId={iconfileid}
+										alt={work.authors[0].name}
 									/>
 									<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
-										@{name}
+										@{work.authors[0].name}
 									</p>
 								</div>
 								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
-									<p className="  font-semibold text-base text-black/80 dark:text-white/80">
-										作品名をいれる
+									<p className="  font-light text-sm text-black/80 dark:text-white/80">
+										{work.description}
 									</p>
 								</div>
 								<Button

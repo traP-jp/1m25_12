@@ -64,7 +64,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		files.map(async fileId => {
 			const { width, height } = await getImageSize(fileId);
 			const filepath = await getFilePath(fileId);
-			console.log(`aiueo${filepath}`);
 			return { id: fileId, width, height, filepath };
 		})
 	);
