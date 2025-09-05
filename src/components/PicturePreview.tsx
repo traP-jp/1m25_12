@@ -28,7 +28,7 @@ export default function ImageGallery({ filepaths, width, height }: Props) {
   return (
     <div>
       {/* 画像ギャラリーの表示エリア */}
-      <div className="flex items-start gap-2 overflow-x-auto rounded-t-sm p-2">
+      <div className="flex flex-col items-start gap-2 overflow-x-auto rounded-t-sm p-2">
         {filepaths.map((id, index) => (
           <div key={id} className="">
             <button

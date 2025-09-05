@@ -7,14 +7,14 @@ type Props = {
   totalPages: number;
 };
 
-export default function Pagination_com({ totalPages }: Props) {
+export default function Pagination_user({ totalPages }: Props) {
   const router = useRouter();
   const params = useParams();
-  const channelId = params.channelId as string;
+  const userId = params.userId as string;
   const currentPage = Number(params.page) || 1;
 
   const handleChange = (page: number) => {
-    router.push(`/worklist/${channelId}/${page}`);
+    router.push(`/worklist/user/${userId}/${page}`);
   };
 
   return (

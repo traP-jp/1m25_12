@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { UserDetail } from "traq-bot-ts";
 import { title } from "@/components/primitives";
 import { Work } from "@/generated/prisma";
-import Pagination from '@/components/WorkList_pagenation';
+import Pagination from '@/components/WorkList_Pagination_Channel';
 import { redirect } from "next/navigation";
 
 type PageProps = {
@@ -31,6 +31,6 @@ const PAGE_SIZE = 12; // 1ページあたりの表示件数
 export default async function WorkPage({ params }: { params: Promise<Params> }) {
     const { channelId } = await params;
 
-    redirect(`/worklist/${channelId}/1`);
+    redirect(`/worklist/channel/${channelId}/1`);
 
 }

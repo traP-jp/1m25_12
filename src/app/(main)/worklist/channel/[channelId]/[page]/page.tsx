@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { UserDetail } from "traq-bot-ts";
 import { title } from "@/components/primitives";
 import { Work } from "@/generated/prisma";
-import Pagination from '@/components/WorkList_pagenation';
+import Pagination from '@/components/WorkList_Pagination_Channel';
 import { redirect } from "next/navigation";
 
 type PageProps = {
@@ -33,7 +33,7 @@ export default async function WorkPage({ params }: { params: Promise<Params> }) 
 	console.log(page);
 	// pageがundefinedやnullの場合は1にリダイレクト
     if (!page) {
-        redirect(`/worklist/${channelId}/1`);
+        redirect(`/worklist/channel/${channelId}/1`);
     }
 
 
