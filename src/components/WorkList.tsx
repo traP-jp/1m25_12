@@ -118,12 +118,15 @@ export default function WorkList({ workDetails }: Props) {
 										key={work.id}
 									>
 										<p className="  font-light text-xs text-black/80 dark:text-white/80">
-											{(work.description ?? content).length > 64
-												? (work.description ?? content).slice(0, 64) + "..."
+											{(work.description ?? content).length > 48
+												? (work.description ?? content).slice(0, 48) + "..."
 												: (work.description ?? content)}
 										</p>
 									</Link>
 								</div>
+								<span className="block absolute bottom-0.5 right-3 text-xs text-gray-500 text-right">
+									{work.createdAt.toLocaleString()}
+								</span>
 							</CardFooter>
 						</Card>
 					);
