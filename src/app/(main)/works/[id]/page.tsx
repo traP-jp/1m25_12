@@ -7,15 +7,15 @@ import { extractFiles } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { traqClient } from "@/lib/traq";
 import { prisma } from "@/lib/prisma";
-import { UserDetail } from "traq-bot-ts";
+import { FileInfo, UserDetail } from "traq-bot-ts";
 import { Button } from "@heroui/button";
-import TrapIcon from "@/components/TrapIcon";
 import { Link } from "@heroui/link";
 import { Divider } from "@heroui/divider";
 import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
+import TraqAvater from "@/components/TraqAvater";
 
 type Params = {
 	id: string;
@@ -25,7 +25,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const { id } = await params;
 
 	const {
-		authors,
+		author,
 		channelId,
 		name,
 		description,
@@ -33,7 +33,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	} = await prisma.work
 		.findUniqueOrThrow({
 			where: { id, deletedAt: null },
-			include: { tags: true, authors: true },
+			include: { tags: true, author: true },
 		})
 		.catch(notFound);
 
@@ -45,8 +45,8 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 
 	const files = extractFiles(content);
 
-	const fileId = await traqClient.users
-		.getUser(authors[0].id ?? "")
+	const authorInfo = await traqClient.users
+		.getUser(author.id ?? "")
 		.then(async response => ({
 			key: id,
 			...((await response.json()) as UserDetail),
@@ -69,12 +69,12 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	);
 
 	const fileInfos: FileInfo[] = await Promise.all(
-		files.map(async (fileid) => {
+		files.map(async fileid => {
 			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
 			return fileInfo;
 		})
 	);
-	
+
 	console.log(fileInfos);
 
 	return (
@@ -143,24 +143,17 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<div className="flex flex-col gap-2 p-4">
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
-							<TrapIcon
-								fileId={fileId.iconFileId}
-								alt={fileId.displayName}
+							<TraqAvater
+								fileId={authorInfo.iconFileId}
+								alt={authorInfo.displayName}
+								size="lg"
 							/>
 
-							{await Promise.all(
-								authors.map(async ({ id, name }) => {
-									const { displayName } = await getUserInfo(id);
-									return (
-										<div key={id}>
-											<span>{displayName}</span>
-											<br />
-											<span className="text-gray-500">@{name}</span>
-										</div>
-									);
-								})
-							)}
-
+							<div>
+								<span>{authorInfo.displayName}</span>
+								<br />
+								<span className="text-gray-500">@{authorInfo.name}</span>
+							</div>
 							<Button
 								size="md"
 								radius="full"

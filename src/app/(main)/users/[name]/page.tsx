@@ -7,16 +7,28 @@ import { Avatar } from "@heroui/avatar";
 import { getFilePath } from "@/lib/client";
 import { prisma } from "@/lib/prisma";
 import { Link } from "@/components/Link";
-import { WorksTabs } from "@/components/WorksTabs";
 import TeamIcon from "@/components/TeamIcon";
 import { TEAM_LIST } from "@/lib/constants";
+import UserWorks from "@/components/UserWorks";
 
 type Params = {
 	name: string;
 };
 
-export default async function UserPage({ params }: { params: Promise<Params> }) {
+type SearchParams = {
+	page?: number;
+};
+
+export default async function UserPage({
+	params,
+	searchParams,
+}: {
+	params: Promise<Params>;
+	searchParams: Promise<SearchParams>;
+}) {
 	const { name } = await params;
+	const { page } = await searchParams;
+
 	const { id, displayName, iconFileId } = await getUser(name).catch(notFound);
 	const { bio, groups } = await getUserInfo(id).catch(notFound);
 
@@ -105,9 +117,11 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					</div>
 				</div>
 			</div>
-			<div>
-				<WorksTabs />
-			</div>
+			<UserWorks
+				id={id}
+				name={name}
+				page={page}
+			/>
 		</div>
 	);
 }

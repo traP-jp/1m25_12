@@ -1,13 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { traqClient } from "@/lib/traq";
 import { Card, CardFooter } from "@heroui/card";
-import { UserDetail } from "traq-bot-ts";
 import TraqImage from "./TraqImage";
-import { Button } from "@heroui/button";
-import TrapIcon from "./TrapIcon";
 import Link from "next/link";
-
-import type { Work, FileInfo } from "@prisma/client";
+import { User, Work } from "@/generated/prisma";
+import { FileInfo } from "traq-bot-ts";
+import TraqAvater from "./TraqAvater";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -37,8 +33,8 @@ export const PenIcon = ({
 	);
 };
 
-type detail = {
-	work: Work;
+type WorkDetail = {
+	work: Work & { author: User };
 	fileid: string[];
 	iconfileid: string;
 	content: string;
@@ -46,31 +42,34 @@ type detail = {
 };
 
 type Props = {
-	workdetails: detail[];
-	totalcount: number;
+	workdetails: WorkDetail[];
 };
 
-const PAGE_SIZE = 12; // 1ページあたりの表示件数
-
-export default function WorkList({ workdetails, totalcount }: Props) {
+export default function WorkList({ workdetails }: Props) {
 	return (
 		<div>
 			<div className="flex flex-wrap items-center justify-center gap-5">
 				{workdetails.map(({ work, fileid, iconfileid, content, fileInfos }) => {
-					
+					console.log(work, fileid, iconfileid, content, fileInfos[0]);
 
 					let mediaComponent;
+
 					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
 						mediaComponent = (
 							<TraqImage
 								removeWrapper
 								className="object-cover h-[200px] w-full rounded-b-none"
 								fileId={fileid[0]}
-								alt={work.description}
+								alt={work.description ?? ""}
 								height={200}
+								loading="lazy"
 							/>
 						);
-					} else if (["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(fileInfos[0]?.extension)) {
+					} else if (
+						["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(
+							fileInfos[0]?.extension
+						)
+					) {
 						mediaComponent = (
 							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
 								<span className="text-gray-500 text-sm">music</span>
@@ -95,33 +94,25 @@ export default function WorkList({ workdetails, totalcount }: Props) {
 								className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
 								key={work.id}
 							>
-								 {mediaComponent}
+								{mediaComponent}
 								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 									<div className="flex items-end absolute bottom-20 left-1 right-1">
-										<TrapIcon
+										<TraqAvater
 											fileId={iconfileid}
-											alt={work.authors[0].name}
+											size="lg"
+											alt={work.author.name}
 										/>
 										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
-											@{work.authors[0].name}
+											@{work.author.name}
 										</p>
 									</div>
 									<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
 										<p className="  font-light text-xs text-black/80 dark:text-white/80">
-											{(work.description ?? content).length > 32
-												? (work.description ?? content).slice(0, 32) + "..."
+											{(work.description ?? content).length > 64
+												? (work.description ?? content).slice(0, 64) + "..."
 												: (work.description ?? content)}
 										</p>
 									</div>
-									<Button
-										size="sm"
-										color="secondary"
-										startContent={<PenIcon />}
-										variant="solid"
-										className="font-normal px-2 text-xs absolute bottom-2 right-2"
-									>
-										レビューを書く
-									</Button>
 								</CardFooter>
 							</Card>
 						</Link>

@@ -4,13 +4,13 @@ import { loadWorks } from "@/actions/loadWorks";
 import Form from "next/form";
 
 type Props = {
-	channelId: string;
+	channelId?: string;
 	category: string;
 };
 
 export default function LoadWorks({ channelId, category }: Props) {
 	return (
-		<Form action={loadWorks}>
+		<Form action={formData => loadWorks(channelId ?? formData)}>
 			{!channelId && (
 				<input
 					name="channel_id"

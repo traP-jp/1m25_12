@@ -14,10 +14,6 @@ export default async function AdminPage() {
 			<h1 className={title({ size: "sm" })}>{name}</h1>
 			<LoadUsers />
 			<LoadWorks
-				channelId=""
-				category="free"
-			/>
-			<LoadWorks
 				channelId="858ae414-21ec-40d8-be6a-012620db8edf"
 				category="graphics"
 			/>
@@ -41,6 +37,7 @@ export default async function AdminPage() {
 				channelId="cde0fe1b-f225-415a-b302-0c7a7ab754e2"
 				category="Game"
 			/>
+			<LoadWorks category="free" />
 		</div>
 	);
 }

@@ -1,28 +1,30 @@
-'use client';
+"use client";
 
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Pagination } from "@heroui/pagination";
 
 type Props = {
-  totalPages: number;
+	totalPages: number;
 };
 
 export default function Pagination_user({ totalPages }: Props) {
-  const router = useRouter();
-  const params = useParams();
-  const name = params.name as string;
-  const currentPage = Number(params.page) || 1;
+	const router = useRouter();
 
-  const handleChange = (page: number) => {
-    router.push(`/worklist/user/${name}/${page}`);
-  };
+	const { name } = useParams();
+	const page = useSearchParams().get("page") ?? "1";
 
-  return (
-    <Pagination
-      color="secondary"
-      page={currentPage}
-      total={totalPages}
-      onChange={handleChange}
-    />
-  );
+	const currentPage = Number(page);
+
+	const handleChange = (page: number) => {
+		router.push(`/users/${name}?page=${page}`);
+	};
+
+	return (
+		<Pagination
+			color="secondary"
+			page={currentPage}
+			total={totalPages}
+			onChange={handleChange}
+		/>
+	);
 }
