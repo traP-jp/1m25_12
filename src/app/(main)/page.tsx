@@ -1,31 +1,22 @@
 import { getChannelPath } from "@/actions/traq/channels";
 import { getMessage } from "@/actions/traq/messages";
 import { prisma } from "@/lib/prisma";
-import { FileInfo, UserDetail } from "traq-bot-ts";
+import { FileInfo } from "traq-bot-ts";
 import WorkList from "@/components/WorkList";
 import { extractFiles } from "@/lib/utils";
-import { traqClient } from "@/lib/traq";
 import { notFound } from "next/navigation";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
-import Link from "next/dist/client/link";
+import { TEAM_LIST } from "@/lib/constants";
+import { Link } from "@/components/Link";
 
 const PAGE_SIZE = 4; // 1ページあたりの表示件数
 
 export default async function Home() {
-	const channelIds: { name: string; id: string }[] = [
-		{ name: "Graphics", id: "858ae414-21ec-40d8-be6a-012620db8edf" },
-		{ name: "Sound", id: "8bd9e07a-2c6a-49e6-9961-4f88e83b4918" },
-		{ name: "Game Development", id: "cde0fe1b-f225-415a-b302-0c7a7ab754e2" },
-		{ name: "CTF", id: "7dc7d0e1-a7b9-4294-ba3e-1149a4c42c71" },
-		{ name: "SysAd", id: "112446e4-a8b5-4618-9813-75f08377ccc5" },
-		{ name: "Algorithms", id: "9e822ec2-634e-4b9c-af30-41707f537426" },
-	];
-
 	const channelDetails = await Promise.all(
-		channelIds.map(async channel => {
-			const path = await getChannelPath(channel.id);
+		TEAM_LIST.map(async ({ id, channelId }) => {
+			const path = await getChannelPath(channelId);
 			const worksRaw = await prisma.work.findMany({
-				where: { channelId: channel.id },
+				where: { channelId },
 				take: PAGE_SIZE,
 				orderBy: {
 					createdAt: "desc", // 新しい順に取得 (toReversed()の代替)
@@ -35,6 +26,7 @@ export default async function Home() {
 					// tags: true, // もしtagsも必要ならここに追加
 				},
 			});
+
 			const workDetails = await Promise.all(
 				worksRaw.map(async work => {
 					const { content } = await getMessage(work.id).catch(notFound);
@@ -64,7 +56,7 @@ export default async function Home() {
 				})
 			);
 
-			return { path, workDetails };
+			return { id, path, workDetails };
 		})
 	);
 
@@ -81,13 +73,21 @@ export default async function Home() {
 
 	return (
 		<div className="space-y-10">
-			{channelDetails.map(({ path, workDetails }) => (
+			{channelDetails.map(({ id, path, workDetails }) => (
 				<div
-					key={path}
+					key={id}
 					className="rounded-4xl bg-gray-100/40 dark:bg-gray-800/80 px-4 py-8 m-12 text-gray-800 dark:text-white"
 				>
 					<div className="flex flex-row items-center p-2 mb-4 justify-between w-full">
-						<h2 className="text-2xl font-semibold mx-auto">#{path}の最新作品</h2>
+						<h2 className="text-2xl font-semibold mx-auto">
+							<Link
+								className="text-2xl font-semibold mx-auto"
+								href={`https://q.trap.jp/channels/${path}`}
+							>
+								#{path}
+							</Link>{" "}
+							の最新作品
+						</h2>
 						<Link href={`/channels/${path}`}>
 							作品一覧
 							<span className="i-material-symbols-arrow_forward  ml-1">→</span>

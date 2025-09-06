@@ -4,7 +4,6 @@ import { User, Work } from "@/generated/prisma";
 import { FileInfo } from "traq-bot-ts";
 import TraqAvatar from "./TraqAvatar";
 import { Link } from "./Link";
-import { traqClient } from "@/lib/traq";
 
 export const PenIcon = ({
 	fill = "currentColor",
