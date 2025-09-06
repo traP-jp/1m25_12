@@ -53,9 +53,7 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 		worksRaw.map(async work => {
 			const { content } = await getMessage(work.id).catch(notFound);
 
-			const files = await extractFiles(content);
-
-			const fileid = files;
+			const fileid = await extractFiles(content);
 
 			const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
 				await Promise.all(
