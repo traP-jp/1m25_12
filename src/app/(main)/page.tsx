@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
 import { TEAM_LIST } from "@/lib/constants";
 import { Link } from "@/components/Link";
+import { getUserInfo } from "@/actions/traq/users";
 
 const PAGE_SIZE = 4; // 1ページあたりの表示件数
 
@@ -30,6 +31,7 @@ export default async function Home() {
 			const workDetails = await Promise.all(
 				worksRaw.map(async work => {
 					const { content } = await getMessage(work.id).catch(notFound);
+					const author = await getUserInfo(work.authorId).catch(notFound);
 
 					const fileid = await extractFiles(content);
 
@@ -52,7 +54,7 @@ export default async function Home() {
 					);
 
 					// console.log(fileInfos);
-					return { work, fileid, content, fileInfos };
+					return { work, author, fileid, content, fileInfos };
 				})
 			);
 

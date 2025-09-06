@@ -12,6 +12,7 @@ import Pagination from "@/components/WorkList_Pagination_Channel";
 import { redirect } from "next/navigation";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
 import { Link } from "./Link";
+import { getUserInfo } from "@/actions/traq/users";
 
 type Props = {
 	path: string[];
@@ -52,6 +53,7 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 	const workDetails = await Promise.all(
 		worksRaw.map(async work => {
 			const { content } = await getMessage(work.id).catch(notFound);
+			const author = await getUserInfo(work.authorId).catch(notFound);
 
 			const fileid = await extractFiles(content);
 
@@ -71,7 +73,7 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 			).filter(
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
-			return { work, fileid, content, fileInfos };
+			return { work, fileid, author, content, fileInfos };
 		})
 	);
 

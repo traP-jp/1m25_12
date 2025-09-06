@@ -1,7 +1,7 @@
 import { Card, CardFooter } from "@heroui/card";
 import TraqImage from "./TraqImage";
 import { User, Work } from "@/generated/prisma";
-import { FileInfo } from "traq-bot-ts";
+import { FileInfo, UserDetail } from "traq-bot-ts";
 import TraqAvatar from "./TraqAvatar";
 import { Link } from "./Link";
 import SoundPreview from "./SoundPreview";
@@ -37,9 +37,10 @@ export const PenIcon = ({
 };
 
 type WorkDetail = {
-	work: Work & { author: User };
+	work: Work;
 	fileid: string[];
 	content: string;
+	author: UserDetail;
 	fileInfos: { fileInfo: FileInfo; extension: string }[];
 };
 
@@ -51,7 +52,7 @@ export default function WorkList({ workDetails }: Props) {
 	return (
 		<div>
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{workDetails.map(({ work, fileid, content, fileInfos }) => {
+				{workDetails.map(({ work, fileid, author, content, fileInfos }) => {
 					let mediaComponent;
 
 					if (PICTURE_EXTENSIONS.includes(fileInfos[0]?.extension)) {
@@ -96,20 +97,23 @@ export default function WorkList({ workDetails }: Props) {
 							{mediaComponent}
 							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 								<Link
-									href={`/users/${work.author.name}`}
-									className="flex items-end absolute bottom-20 left-1 right-1"
+									href={`/users/${author.name}`}
+									className="flex items-end absolute bottom-19.5 left-1 right-1"
 								>
 									<TraqAvatar
-										username={work.author.name}
+										username={author.name}
 										size="lg"
-										alt={work.author.name}
+										alt={author.name}
 									/>
-									<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
-										@{work.author.name}
-									</p>
+									<div className=" font-light text-sm text-black/80 dark:text-white/80 ml-2">
+										<div className="h-[20px] overflow-hidden">
+											{author.displayName}
+										</div>
+										<div>@{author.name}</div>
+									</div>
 								</Link>
 
-								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+								<div className="flex items-end absolute flex-col mt-9 text-left left-4 ">
 									<Link
 										href={`/works/${work.id}`}
 										key={work.id}

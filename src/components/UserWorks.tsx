@@ -11,6 +11,7 @@ import { FileInfo, UserDetail } from "traq-bot-ts";
 import Pagination from "@/components/WorkList_Pagination_User";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
 import { ReviewType } from "@/generated/prisma";
+import { getUserInfo } from "@/actions/traq/users";
 
 type Props = {
 	id: string;
@@ -51,6 +52,7 @@ export default async function UserWorks({ id, name, page }: Props) {
 	]);
 
 	const totalPages = Math.ceil(totalWorks / PAGE_SIZE);
+	const author = await getUserInfo(id).catch(notFound);
 
 	const workDetails = await Promise.all(
 		worksRaw.map(async work => {
@@ -75,7 +77,7 @@ export default async function UserWorks({ id, name, page }: Props) {
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
 
-			return { work, fileid, content, fileInfos };
+			return { work, fileid, author, content, fileInfos };
 		})
 	);
 
