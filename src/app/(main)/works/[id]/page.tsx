@@ -21,6 +21,7 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
+import { getFileMeta } from "@/actions/traq/getFileMeta";
 type Params = {
 	id: string;
 };
@@ -68,10 +69,15 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	// ファイルを読み込んで寸法を取得
 	const imagesWithDimensions = await Promise.all(
 		files.map(async (fileId) => {
-			const { width, height } = await getImageSize(fileId);
 			const  filepath  = await getFilePath(fileId);
+			const filemeta = await getFileMeta(fileId);
+			const extension = filemeta?.name ? (filemeta.name.split('.').pop()?.toLowerCase() ?? "") : "";
+			if (!["png", "jpg", "jpeg", "gif", "webp"].includes(extension)) {
+				return { id: fileId, width: "", height: "", filepath, extension };
+			}
+			const { width, height } = await getImageSize(fileId);
 			console.log(`aiueo${filepath}`);
-			return { id: fileId, width, height, filepath };
+			return { id: fileId, width, height, filepath, extension};
 		}),
 	);
 
@@ -80,11 +86,33 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
 			<div className="flex flex-col flex-3  bg-gray-50 dark:bg-gray-900 rounded-sm">
 				<div className="   rounded-t-sm rounded-b-none  bg-blue-50  dark:bg-gray-700 ">
-					<ImageGallery 
-						filepaths={imagesWithDimensions.map((img) => img.filepath)}
-						width={imagesWithDimensions.map((img) => img.width)}
-						height={imagesWithDimensions.map((img) => img.height)}
-					/>
+					{imagesWithDimensions.map(({ id, width, height, filepath, extension }) => {
+						if (["png", "jpg", "jpeg", "gif", "webp"].includes(extension)) {
+							// 画像の場合
+							<ImageGallery
+								filepaths={imagesWithDimensions.map((img) => img.filepath)}
+								width={imagesWithDimensions.map((img) => img.width)}
+								height={imagesWithDimensions.map((img) => img.height)}
+							/>
+						} else if (["mp3", "wav", "ogg", "flac", "aac", "m4a"].includes(extension)) {
+							// 音楽ファイルの場合
+							return (
+								// eslint-disable-next-line react/jsx-key
+								<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">music</span>
+							</div>
+							);
+						} else {
+							// その他のファイル
+							return (
+								// eslint-disable-next-line react/jsx-key
+								<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">No Preview</span>
+							</div>
+							);
+						}
+					})}
+					
 				</div>
 				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
 				<div className=" flex flex-row justify-end gap-2 p-2 ">
