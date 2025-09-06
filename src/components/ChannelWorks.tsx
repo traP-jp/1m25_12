@@ -1,7 +1,6 @@
 "use server";
 
 import WorkList from "@/components/WorkList";
-import { getChannelPath } from "@/actions/traq/channels";
 import { getMessage } from "@/actions/traq/messages";
 import { extractFiles } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -49,7 +48,6 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 
 	const totalPages = Math.ceil(totalWorks / PAGE_SIZE);
 
-	// console.log(worksRaw);
 	const worksdetail = await Promise.all(
 		worksRaw.map(async work => {
 			const { content } = await getMessage(work.id).catch(notFound);
@@ -73,7 +71,6 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 				}));
 
 			const iconfileid = author.iconFileId;
-			// console.log(fileid);
 			const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
 				await Promise.all(
 					fileid.map(async fileid => {
@@ -90,13 +87,9 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 			).filter(
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
-
-			// console.log(fileInfos);
 			return { work, fileid, iconfileid, content, fileInfos };
 		})
 	);
-
-	console.log(worksdetail);
 
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">

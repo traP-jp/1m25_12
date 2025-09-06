@@ -25,22 +25,3 @@ export async function getChannelStats(channelId: string) {
 		.getChannelStats(channelId)
 		.then(response => response.json() as Promise<ChannelStats>);
 }
-
-const limitMax = 200;
-
-export async function getChannelMessages(channelId: string) {
-	const { totalMessageCount } = await getChannelStats(channelId);
-
-	return [...Array(Math.ceil(totalMessageCount / limitMax)).keys()].reduce(
-		(acc, index) => {
-			console.log(index);
-
-			const page = traqClient.channels
-				.getMessages(channelId, { limit: limitMax, offset: index * limitMax })
-				.then(res => res.json() as Promise<Message[]>);
-
-			return acc.then(async prev => [...prev, ...(await page)]);
-		},
-		Promise.resolve([] as Message[])
-	);
-}

@@ -50,8 +50,6 @@ export default function WorkList({ workdetails }: Props) {
 		<div>
 			<div className="flex flex-wrap items-center justify-center gap-5">
 				{workdetails.map(({ work, fileid, iconfileid, content, fileInfos }) => {
-					console.log(work, fileid, iconfileid, content, fileInfos[0]);
-
 					let mediaComponent;
 
 					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
@@ -59,12 +57,13 @@ export default function WorkList({ workdetails }: Props) {
 							<div className="h-[200px] w-full relative">
 								<TraqImage
 									removeWrapper
+									thumbnail
 									className="object-cover w-full rounded-b-none"
 									fileId={fileid[0]}
 									fill
 									placeholder="empty"
 									alt={work.description ?? ""}
-									priority
+									loading="lazy"
 								/>
 							</div>
 						);
@@ -101,10 +100,9 @@ export default function WorkList({ workdetails }: Props) {
 								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 									<div className="flex items-end absolute bottom-20 left-1 right-1">
 										<TraqAvatar
-											fileId={iconfileid}
+											username={work.author.name}
 											size="lg"
 											alt={work.author.name}
-											loading="lazy"
 										/>
 										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
 											@{work.author.name}

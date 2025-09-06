@@ -1,5 +1,4 @@
-import { getFileBlob } from "@/actions/traq/getFileBlob";
-import { getFileMeta } from "@/actions/traq/getFileMeta";
+import { getFileBlob, getThumbnailBlob } from "@/actions/traq/getFileBlob";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,22 +7,20 @@ type Params = {
 };
 
 export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
-	const headers = request.headers;
 	const { id } = await params;
+	const thumbnail = Boolean(request.nextUrl.searchParams.get("thumbnail"));
 
-	headers.set(
-		"Content-Type",
-		await getFileMeta(id)
-			.then(meta => meta.mime)
-			.catch(notFound)
-	);
+	if (thumbnail) {
+		return new NextResponse(
+			await getThumbnailBlob(id)
+				.then(blob => blob.stream())
+				.catch(notFound)
+		);
+	}
 
 	return new NextResponse(
 		await getFileBlob(id)
 			.then(blob => blob.stream())
-			.catch(notFound),
-		{
-			headers,
-		}
+			.catch(notFound)
 	);
 }

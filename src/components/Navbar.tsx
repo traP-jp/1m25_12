@@ -27,7 +27,6 @@ export const Navbar = () => {
 
 		// 2. 入力値が空でなければ検索処理を実行
 		if (query.trim()) {
-			console.log(`「${query}」で検索を実行します`);
 			// ここにAPIリクエストやページ遷移などの検索ロジックを記述
 		}
 	};

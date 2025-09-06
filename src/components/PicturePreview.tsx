@@ -7,11 +7,12 @@ import { Image } from "@heroui/image";
 // UserPageから画像のIDリストを受け取る
 type Props = {
 	filepaths: string[];
+	blurredFilePaths: string[];
 	width: number[];
 	height: number[];
 };
 
-export default function ImageGallery({ filepaths, width, height }: Props) {
+export default function ImageGallery({ filepaths, blurredFilePaths, width, height }: Props) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
@@ -40,9 +41,13 @@ export default function ImageGallery({ filepaths, width, height }: Props) {
 						>
 							<Image
 								alt="画像プレビュー"
+								classNames={{
+									wrapper: "bg-no-repeat bg-center",
+								}}
 								src={filepaths[index]}
+								fallbackSrc={blurredFilePaths[index]}
 								height={800}
-								className="object-contain p-4 my-auto rounded-none  " // 高さを固定して見た目を揃える
+								className="object-contain p-4 my-auto rounded-none " // 高さを固定して見た目を揃える
 								loading="lazy"
 							/>
 						</button>

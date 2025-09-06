@@ -54,7 +54,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		.catch(() => ({
 			key: id,
 			id,
-			name,
+			name: author.name,
 			displayName: "",
 			iconFileId: "",
 			createdAt: new Date(),
@@ -64,28 +64,23 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		files.map(async fileId => {
 			const { width, height } = await getImageSize(fileId);
 			const filepath = await getFilePath(fileId);
-			return { id: fileId, width, height, filepath };
+			const blurredFilePath = await getFilePath(fileId, { thumbnail: true });
+			return { id: fileId, width, height, filepath, blurredFilePath };
 		})
 	);
-
-	const fileInfos: FileInfo[] = await Promise.all(
-		files.map(async fileid => {
-			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
-			return fileInfo;
-		})
-	);
-
-	console.log(fileInfos);
 
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
 			<div className="flex flex-col flex-3  bg-gray-50 dark:bg-gray-900 rounded-sm">
-				<div className="   rounded-t-sm rounded-b-none  bg-blue-50  dark:bg-gray-700 ">
+				<div className="rounded-t-sm rounded-b-none  bg-blue-50  dark:bg-gray-700 ">
 					<ImageGallery
-						filepaths={imagesWithDimensions.map(img => img.filepath)}
-						width={imagesWithDimensions.map(img => img.width ?? 0)}
-						height={imagesWithDimensions.map(img => img.height ?? 0)}
+						filepaths={imagesWithDimensions.map(({ filepath }) => filepath)}
+						blurredFilePaths={imagesWithDimensions.map(
+							({ blurredFilePath }) => blurredFilePath
+						)}
+						width={imagesWithDimensions.map(({ width }) => width ?? 0)}
+						height={imagesWithDimensions.map(({ height }) => height ?? 0)}
 					/>
 				</div>
 				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
@@ -144,7 +139,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
 							<TraqAvatar
-								fileId={authorInfo.iconFileId}
+								username={authorInfo.name}
 								alt={authorInfo.displayName}
 								size="lg"
 							/>

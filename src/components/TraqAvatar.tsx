@@ -1,14 +1,14 @@
-import { getFilePath } from "@/lib/client";
+import { getIconPath } from "@/lib/traq";
 import { Avatar, AvatarProps } from "@heroui/avatar";
 
 type Props = {
-	fileId: string;
+	username: string;
 } & Omit<AvatarProps, "src">;
 
-export default async function TraqAvatar({ fileId, ...props }: Props) {
+export default async function TraqAvatar({ username, ...props }: Props) {
 	return (
 		<Avatar
-			src={getFilePath(fileId)}
+			src={getIconPath(username)}
 			{...props}
 		/>
 	);
