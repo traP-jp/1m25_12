@@ -20,6 +20,7 @@ model User {
     works     Work[]    @relation("user_work_mappings")
     tags      Tag[]
     bookmarks Work[]    @relation("user_bookmarks")
+    likes Work[]    @relation("user_likes")
 
     @@map("users")
     @@index([name])
@@ -114,6 +115,8 @@ model Work {
     viewCount Int @default(0) @map("view_count")
 
     bookmarkUsers User[] @relation("user_bookmarks")
+
+    likedUsers User[] @relation("user_likes")
 
     allowReviews Boolean @default(false) @map("allow_reviews")
 
