@@ -52,6 +52,11 @@ model UserChannel {
     @@map("user_channels")
 }
 
+enum ReviewType {
+    GOOD
+    MORE
+}
+
 model Review {
     id String @id @default(uuid(7))
 
@@ -61,10 +66,7 @@ model Review {
     work   Work   @relation(fields: [workId], references: [id])
     workId String @map("work_id")
 
-    parent   Review?  @relation("parent_id", fields: [parentId], references: [id])
-    parentId String?  @map("parent_id")
-    children Review[] @relation("parent_id")
-
+    type ReviewType
     contents String @db.MediumText
 
     createdAt DateTime  @default(now()) @map("created_at")
@@ -73,6 +75,7 @@ model Review {
     deletedAt DateTime? @map("deleted_at")
 
     @@map("reviews")
+    @@index([authorId, workId])
 }
 
 enum Category {
