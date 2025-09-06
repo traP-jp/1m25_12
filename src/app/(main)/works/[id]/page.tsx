@@ -15,13 +15,14 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
-import { getFileMeta } from "@/actions/traq/getFileMeta";
 import {bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
 import { isWorkLikedByUser } from "@/actions/likedWorks";
 import { getMe } from "@/actions/getMe";
 import BookmarkButton  from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
+
 import TraqAvater from "@/components/TraqAvater";
+
 
 type Params = {
 	id: string;
@@ -66,20 +67,14 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			createdAt: new Date(),
 		}));
 
-	// ファイルを読み込んで寸法を取得
 	const imagesWithDimensions = await Promise.all(
-		files.map(async (fileId) => {
-			const  filepath  = await getFilePath(fileId);
-			const filemeta = await getFileMeta(fileId);
-			const extension = filemeta?.name ? (filemeta.name.split('.').pop()?.toLowerCase() ?? "") : "";
-			if (!["png", "jpg", "jpeg", "gif", "webp"].includes(extension)) {
-				return { id: fileId, width: "", height: "", filepath, extension };
-			}
+		files.map(async fileId => {
 			const { width, height } = await getImageSize(fileId);
-			console.log(`aiueo${filepath}`);
-			return { id: fileId, width, height, filepath, extension};
-		}),
+			const filepath = await getFilePath(fileId);
+			return { id: fileId, width, height, filepath };
+		})
 	);
+
 
 	const userme = await getMe();
 	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
@@ -98,33 +93,11 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
 			<div className="flex flex-col flex-3  bg-gray-50 dark:bg-gray-900 rounded-sm">
 				<div className="   rounded-t-sm rounded-b-none  bg-blue-50  dark:bg-gray-700 ">
-					{imagesWithDimensions.map(({ id, width, height, filepath, extension }) => {
-						if (["png", "jpg", "jpeg", "gif", "webp"].includes(extension)) {
-							// 画像の場合
-							<ImageGallery
-								filepaths={imagesWithDimensions.map((img) => img.filepath)}
-								width={imagesWithDimensions.map((img) => img.width)}
-								height={imagesWithDimensions.map((img) => img.height)}
-							/>
-						} else if (["mp3", "wav", "ogg", "flac", "aac", "m4a"].includes(extension)) {
-							// 音楽ファイルの場合
-							return (
-								// eslint-disable-next-line react/jsx-key
-								<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
-								<span className="text-gray-500 text-sm">music</span>
-							</div>
-							);
-						} else {
-							// その他のファイル
-							return (
-								// eslint-disable-next-line react/jsx-key
-								<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
-								<span className="text-gray-500 text-sm">No Preview</span>
-							</div>
-							);
-						}
-					})}
-					
+					<ImageGallery
+						filepaths={imagesWithDimensions.map(img => img.filepath)}
+						width={imagesWithDimensions.map(img => img.width ?? 0)}
+						height={imagesWithDimensions.map(img => img.height ?? 0)}
+					/>
 				</div>
 				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
 				<div className=" flex flex-row justify-end gap-2 p-2 ">
@@ -137,7 +110,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						isIconOnly
 						size="md"
 						variant={undefined} // 背景を少しつけるスタイル
-
 						aria-label="Add tag" // スクリーンリーダー用の説明
 						className="mr-2 text-gray-900 dark:text-white  dark:hover:text-blue-300  hover:text-blue-300"
 					>
@@ -177,28 +149,20 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<div className="flex flex-col gap-2 p-4">
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
-							<TraqAvater
-								fileId={authorInfo.iconFileId}
-								alt={authorInfo.displayName}
-								size="lg"
-							/>
+							<Link href={`/users/${authorInfo.name}`} className="flex items-center gap-2">
+								<TraqAvater
+									fileId={authorInfo.iconFileId}
+									alt={authorInfo.displayName}
+									size="lg"
+								/>
+							
 
-							{await Promise.all(
-								author.map(async ({ id, name }) => {
-									const { displayName } = await getUserInfo(id);
-									return (
-										<div key={id}>
-											<Link href = {`/users/${id}`}>
-											<span>{displayName}</span>
-											<br />
-											<span className="text-gray-500">@{name}</span>
-											</Link>
-										</div>
-									);
-								})
-							)}
-
-
+							<div>
+								<span className=" text-gray-900 dark:text-white font-semibold">{authorInfo.displayName}</span>
+								<br />
+								<span className="text-gray-500">@{authorInfo.name}</span>
+							</div>
+							</Link>
 							<BookmarkButton
 							isBookmarked = {isBookmarked}
 							id = {id}
