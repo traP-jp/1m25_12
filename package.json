@@ -34,9 +34,11 @@
 		"@heroui/listbox": "2.3.23",
 		"@heroui/modal": "^2.2.22",
 		"@heroui/navbar": "2.2.22",
+		"@heroui/pagination": "^2.2.23",
 		"@heroui/snippet": "2.2.25",
 		"@heroui/switch": "2.2.22",
 		"@heroui/system": "2.4.20",
+		"@heroui/tabs": "^2.2.22",
 		"@heroui/theme": "2.4.20",
 		"@prisma/adapter-mariadb": "^6.14.0",
 		"@prisma/client": "^6.15.0",
@@ -46,6 +48,7 @@
 		"clsx": "2.1.1",
 		"framer-motion": "11.18.2",
 		"intl-messageformat": "10.7.16",
+		"lucide-react": "^0.542.0",
 		"modal]": "link:@heroui/modal]",
 		"next": "15.4.6",
 		"next-auth": "5.0.0-beta.29",
@@ -88,5 +91,6 @@
 		"tailwind-variants": "2.0.1",
 		"tailwindcss": "^4.1.12",
 		"typescript": "^5"
-	}
+	},
+	"packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67"
 }

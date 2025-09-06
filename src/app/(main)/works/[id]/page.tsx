@@ -7,21 +7,22 @@ import { extractFiles } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { traqClient } from "@/lib/traq";
 import { prisma } from "@/lib/prisma";
-import { Card, CardFooter } from "@heroui/card";
-import { UserDetail } from "traq-bot-ts";
-import TraqImage from "@/components/TraqImage";
-import { title } from "@/components/primitives";
+import { FileInfo, UserDetail } from "traq-bot-ts";
 import { Button } from "@heroui/button";
-import TrapIcon from "@/components/TrapIcon";
-import { Image } from "@heroui/image";
 import { Link } from "@heroui/link";
-import { Avatar } from "@heroui/avatar";
 import { Divider } from "@heroui/divider";
 import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
+import {bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
+import { isWorkLikedByUser } from "@/actions/likedWorks";
+import { getMe } from "@/actions/getMe";
+import BookmarkButton  from "@/components/BookmarkButton";
+import LikeButton from "@/components/LikeButton";
+import TraqAvater from "@/components/TraqAvater";
+
 type Params = {
 	id: string;
 };
@@ -30,16 +31,15 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const { id } = await params;
 
 	const {
-		authors,
+		author,
 		channelId,
 		name,
 		description,
-		category,
 		updatedAt: updatedAt0,
 	} = await prisma.work
 		.findUniqueOrThrow({
 			where: { id, deletedAt: null },
-			include: { tags: true, authors: true },
+			include: { tags: true, author: true },
 		})
 		.catch(notFound);
 
@@ -51,8 +51,8 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 
 	const files = extractFiles(content);
 
-	const fileId = await traqClient.users
-		.getUser(authors[0].id ?? "")
+	const authorInfo = await traqClient.users
+		.getUser(author.id ?? "")
 		.then(async response => ({
 			key: id,
 			...((await response.json()) as UserDetail),
@@ -80,6 +80,18 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			return { id: fileId, width, height, filepath, extension};
 		}),
 	);
+
+	const userme = await getMe();
+	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
+	const isLiked = await isWorkLikedByUser(id,userme.id);
+
+	const fileInfos: FileInfo[] = await Promise.all(
+		files.map(async fileid => {
+			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
+			return fileInfo;
+		})
+	);
+
 
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">
@@ -116,20 +128,16 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				</div>
 				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
 				<div className=" flex flex-row justify-end gap-2 p-2 ">
+					<LikeButton
+						isLiked={isLiked}
+						id={id}
+						userid={userme.id}
+					/>
 					<Button
 						isIconOnly
 						size="md"
-						variant="undefined" // 背景を少しつけるスタイル
-						aria-label="Add tag" // スクリーンリーダー用の説明
-						className="mr-2 text-gray-900 dark:hover:text-pink-400 dark:text-white hover:text-pink-400"
-					>
-						{/* いいねされているときはi-material-symbols-favoriteにしてほしい */}
-						<span className="i-material-symbols-favorite-outline text-lg"></span>
-					</Button>
-					<Button
-						isIconOnly
-						size="md"
-						variant="undefined" // 背景を少しつけるスタイル
+						variant={undefined} // 背景を少しつけるスタイル
+
 						aria-label="Add tag" // スクリーンリーダー用の説明
 						className="mr-2 text-gray-900 dark:text-white  dark:hover:text-blue-300  hover:text-blue-300"
 					>
@@ -158,7 +166,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						<Button
 							isIconOnly
 							size="sm"
-							variant="undefined"
+							variant={undefined}
 							aria-label="Add tag"
 							className="text-gray-600 dark:text-blue-400 hover:text-orange-300 dark:hover:text-orange-300"
 						>
@@ -169,28 +177,31 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<div className="flex flex-col gap-2 p-4">
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
-							<TrapIcon
-								fileId={fileId.iconFileId}
-								alt={fileId.displayName}
+							<TraqAvater
+								fileId={authorInfo.iconFileId}
+								alt={authorInfo.displayName}
+								size="lg"
 							/>
 
 							{await Promise.all(
-								authors.map(async ({ id, name }) => {
+								author.map(async ({ id, name }) => {
 									const { displayName } = await getUserInfo(id);
-									return <p>@{name}</p>;
+									return (
+										<div key={id}>
+											<span>{displayName}</span>
+											<br />
+											<span className="text-gray-500">@{name}</span>
+										</div>
+									);
 								})
 							)}
 
-							<Button
-								size="md"
-								radius="full"
-								color="secondary"
-								className="ml-auto"
-							>
-								<span className="i-material-symbols-bookmark-outline"></span>
-								{/* ブックマークされているときはi-material-symbols-bookmarkにしてほしい */}
-								ブックマーク
-							</Button>
+
+							<BookmarkButton
+							isBookmarked = {isBookmarked}
+							id = {id}
+							userid= {userme.id}
+						/>
 						</div>
 					</div>
 				</div>
@@ -203,105 +214,126 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				<Divider className="my-2" />
 				<div className="flex flex-col gap-2 w-full overflow-y-auto">
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
 					<div className="flex flex-col w-full">
-					<h2 className="font-semibold text-lg">Good</h2>
-					<p className="text-gray-700 dark:text-gray-50 p-3 ">レビューが表示されます</p>
-					<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-						投稿日: 2025/5/2 22:55
-					</p>
-					<Divider className="my-2" />
+						<h2 className="font-semibold text-lg">Good</h2>
+						<p className="text-gray-700 dark:text-gray-50 p-3 ">
+							レビューが表示されます
+						</p>
+						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+							投稿日: 2025/5/2 22:55
+						</p>
+						<Divider className="my-2" />
 					</div>
-
-					
 				</div>
-				
 			</div>
 		</div>
 	);

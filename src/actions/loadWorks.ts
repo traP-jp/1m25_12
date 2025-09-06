@@ -1,11 +1,13 @@
 "use server";
 
-import { Category } from "@/lib/models";
 import { prisma } from "@/lib/prisma";
 import { getChannelMessages } from "./traq/channels";
+import { Category } from "@/generated/prisma";
 
-export async function loadWorks(formData: FormData) {
-	const channelId = formData.get("channel_id") as string;
+export async function loadWorks(formData: FormData | string) {
+	const channelId =
+		typeof formData === "string" ? formData : (formData.get("channel_id") as string);
+
 	const messages = await getChannelMessages(channelId);
 
 	await prisma.channel.upsert({
@@ -19,29 +21,22 @@ export async function loadWorks(formData: FormData) {
 		skipDuplicates: true,
 	});
 
-	await prisma.$transaction(
-		messages
-			.map(({ id, userId, createdAt, updatedAt }) => [
-				prisma.userChannel.upsert({
-					where: { channelId_ownerId: { channelId, ownerId: userId } },
-					update: {},
-					create: { channelId, ownerId: userId },
-				}),
-				prisma.work.upsert({
-					where: { id },
-					update: {},
-					create: {
-						id,
-						category: Category.OTHERS,
-						viewCount: 0,
-						allowReviews: false,
-						createdAt: new Date(createdAt),
-						updatedAt: new Date(updatedAt),
-						channel: { connect: { id: channelId } },
-						authors: { connect: [{ id: userId }] },
-					},
-				}),
-			])
-			.flat()
-	);
+	await prisma.userChannel.createMany({
+		data: messages.map(({ userId }) => ({ channelId, ownerId: userId })),
+		skipDuplicates: true,
+	});
+
+	await prisma.work.createMany({
+		data: messages.map(({ id, userId, createdAt, updatedAt }) => ({
+			id,
+			category: Category.OTHERS,
+			viewCount: 0,
+			allowReviews: false,
+			createdAt: new Date(createdAt),
+			updatedAt: new Date(updatedAt),
+			channelId,
+			authorId: userId,
+		})),
+		skipDuplicates: true,
+	});
 }
