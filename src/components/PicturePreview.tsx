@@ -39,7 +39,7 @@ export default function ImageGallery({ filepaths, width, height }: Props) {
               <Image
                 alt="画像プレビュー"
                 src={filepaths[index]}
-                height={800} 
+                height={800}
                 className="object-contain p-4 my-auto rounded-none  " // 高さを固定して見た目を揃える
               />
             </button>
@@ -50,7 +50,7 @@ export default function ImageGallery({ filepaths, width, height }: Props) {
      {/* 画像表示用モーダル */}
       <Modal size="5xl" isOpen={isOpen} onClose={onClose} placement="center">
         <ModalContent className="bg-black/80 text-white">
-          
+
           <ModalBody className=" flex items-center justify-center p-4">
             {/* ✅ 選択された画像の情報を正しく渡す */}
             {(selectedImageId && selectedIndex !== -1) && (
