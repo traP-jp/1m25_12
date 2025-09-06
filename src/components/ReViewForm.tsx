@@ -5,6 +5,9 @@ import { Button } from "@heroui/button";
 
 import { Textarea } from "@heroui/input";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { postReview } from "@/actions/postReview";
+import { Review } from "@/generated/prisma";
+import { getMe } from "@/actions/getMe";
 
 // --- Icon Components ---
 function SendIcon() {
@@ -16,7 +19,7 @@ function SendIcon() {
 //   workId: string;
 // }
 
-export default function ReviewForm() {
+export default function ReviewForm({ userid, workid }: { userid: string; workid: string }) {
 	const [comment, setComment] = useState("");
 	const [evaluation, setEvaluation] = useState<string | null>(null);
 
@@ -24,7 +27,7 @@ export default function ReviewForm() {
 		// フォームが有効な場合のみ実行
 		if (!comment || !evaluation) return;
 
-		// TODO: ここでAPIを呼び出してレビューをサーバーに送信する
+		postReview(userid, workid, evaluation.toUpperCase() as "GOOD" | "MORE", comment);
 
 		// 送信後にフォームをクリア
 		setComment("");
