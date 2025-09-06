@@ -188,9 +188,11 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 									const { displayName } = await getUserInfo(id);
 									return (
 										<div key={id}>
+											<Link href = {`/users/${id}`}>
 											<span>{displayName}</span>
 											<br />
 											<span className="text-gray-500">@{name}</span>
+											</Link>
 										</div>
 									);
 								})
