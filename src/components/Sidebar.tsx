@@ -1,10 +1,19 @@
 "use client";
-import { Link } from "@heroui/link";
 
-export const Sidebar = () => {
+import { Link } from "@heroui/link";
+import clsx from "clsx";
+
+type Props = {
+	onPress: () => void;
+};
+
+export const Sidebar = ({ onPress }: Props) => {
 	return (
-		<div className="w-64 h-full  p-4">
-			<Link href="/">
+		<div className="w-64 h-full p-4">
+			<Link
+				href="/"
+				onPress={onPress}
+			>
 				<h1 className="flex items-center dark:text-white  text-gray-700 text-2xl font-bold">
 					<span className="i-material-symbols-house  mr-2 text-3xl"></span>
 					ホーム
@@ -14,46 +23,42 @@ export const Sidebar = () => {
 				チャンネル
 			</h1>
 			<ul>
-				<li className="m-4">
-					<Link href="/channels/858ae414-21ec-40d8-be6a-012620db8edf">
-						<h2 className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
-							<span className="i-material-symbols-palette  mr-2 text-2xl"></span>
-							#team/graphics/progress
-						</h2>
-					</Link>
-				</li>
-				<li className="m-4">
-					<Link href="/channels/8bd9e07a-2c6a-49e6-9961-4f88e83b4918">
-						<h2 className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
-							<span className="i-material-symbols-music-note  mr-2 text-2xl"></span>
-							#team/sound/progress
-						</h2>
-					</Link>
-				</li>
-				<li className="m-4">
-					<Link href="/channels/7dc7d0e1-a7b9-4294-ba3e-1149a4c42c71">
-						<h2 className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
-							<span className="i-material-symbols-flag  mr-2 text-2xl"></span>
-							#team/CTF/progress
-						</h2>
-					</Link>
-				</li>
-				<li className="m-4">
-					<Link href="/channels/112446e4-a8b5-4618-9813-75f08377ccc5">
-						<h2 className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
-							<span className="i-material-symbols-computer  mr-2 text-2xl"></span>
-							#team/SysAd/progress
-						</h2>
-					</Link>
-				</li>
-				<li className="m-4">
-					<Link href="/channels/cde0fe1b-f225-415a-b302-0c7a7ab754e2">
-						<h2 className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
-							<span className="i-material-symbols-stadia-controller  mr-2 text-2xl"></span>
-							#team/Game/progress
-						</h2>
-					</Link>
-				</li>
+				{[
+					{
+						path: "channels/team/graphics/progress",
+						icon: "i-material-symbols-palette",
+					},
+					{
+						path: "channels/team/sound/progress",
+						icon: "i-material-symbols-music-note",
+					},
+					{
+						path: "channels/team/CTF/progress",
+						icon: "i-material-symbols-flag",
+					},
+					{
+						path: "channels/team/SysAd/progress",
+						icon: "i-material-symbols-computer",
+					},
+					{
+						path: "channels/team/Game/progress",
+						icon: "i-material-symbols-stadia-controller",
+					},
+				].map(({ path, icon }, index) => (
+					<li
+						key={index}
+						className="m-4"
+					>
+						<Link
+							href={`/${path}`}
+							onPress={onPress}
+						>
+							<h2 className="flex items-center dark:text-white text-gray-700 text-xl font-base">
+								<span className={clsx([icon, "mr-2 text-2xl"])} /> #{path}
+							</h2>
+						</Link>
+					</li>
+				))}
 			</ul>
 		</div>
 	);

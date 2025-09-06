@@ -1,4 +1,5 @@
 import { getMe } from "@/actions/getMe";
+import LoadChannels from "@/components/admin/LoadChannels";
 import LoadUsers from "@/components/admin/LoadUsers";
 import LoadWorks from "@/components/admin/LoadWorks";
 import { title } from "@/components/primitives";
@@ -7,12 +8,13 @@ import { forbidden } from "next/navigation";
 export default async function AdminPage() {
 	const { name } = await getMe();
 
-	if (!process.env.ADMINERS?.split(";").includes(name)) forbidden();
+	if (!process.env.ADMINS?.split(";").includes(name)) forbidden();
 
 	return (
 		<div>
 			<h1 className={title({ size: "sm" })}>{name}</h1>
 			<LoadUsers />
+			<LoadChannels />
 			<LoadWorks
 				channelId="858ae414-21ec-40d8-be6a-012620db8edf"
 				category="graphics"
