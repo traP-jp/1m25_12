@@ -10,7 +10,6 @@ import { Link } from "@/components/Link";
 import TeamIcon from "@/components/TeamIcon";
 import { TEAM_LIST } from "@/lib/constants";
 import UserWorks from "@/components/UserWorks";
-import UserSetting from "@/components/UserSetting";
 
 type Params = {
 	name: string;
@@ -69,50 +68,57 @@ export default async function UserPage({
 				</div>
 				<div className="flex gap-8">
 					<div className="w-2/3 flex flex-col justify-start gap-4">
-						<div className="flex flex-row">
-							<Avatar
-								src={getFilePath(iconFileId)}
-								className="w-42 h-42 text-large"
-							/>
-							<div className="flex flex-col ml-4 justify-center">
-								<span className="text-2xl">{displayName}</span>
-								<span className="text-xl text-gray-500 mb-4">@{name}</span>
+						<div className="flex flex-row justify-start">
+							<div className="flex flex-row gap-6">
+								<Avatar
+									src={getFilePath(iconFileId)}
+									className="w-42 h-42 text-large"
+								/>
+								<div className="flex flex-col justify-center">
+									<span className="text-2xl">{displayName}</span>
+									<span className="text-xl text-gray-500 mb-4">@{name}</span>
+								</div>
 							</div>
-							<div className="justify-center text-left">
-								<span className="text-xl">所属</span>
+							<div className="justify-center flex flex-col text-left ml-14">
 								<ul className="flex flex-wrap gap-2 mt-2">
-									{TEAM_LIST.map(team => {
-										const isMember = groups.includes(team.id);
-										return (
-											<li
-												key={team.id}
-												className={
-													isMember
-														? ""
-														: "grayscale brightness-0 opacity-20"
-												}
-											>
-												<TeamIcon teamName={team.name} />
-											</li>
-										);
-									})}
+									{await Promise.all(
+										TEAM_LIST.map(async team => {
+											const isMember = groups.includes(team.id);
+											return (
+												<Link
+													key={team.id}
+													href={`/channels/${await getChannelPath(team.channelId)}`}
+												>
+													<li
+														key={team.id}
+														className={
+															isMember
+																? ""
+																: "grayscale brightness-0 opacity-20"
+														}
+													>
+														<TeamIcon teamName={team.name} />
+													</li>
+												</Link>
+											);
+										})
+									)}
 								</ul>
 							</div>
 						</div>
-						<div className="w-full break-words">
+						<div className="w-full break-words ml-8">
 							<p>{bio.length > 200 ? bio.substring(0, 200) + "..." : bio}</p>
 						</div>
 					</div>
 					<div className="max-w-sm flex flex-col gap-4">
-						<h2 className="text-xl mt-4">チャンネル一覧</h2>
 						<ul className="flex flex-col">
-							{channelPaths.map(path => (
-								<li
-									className="text-lg"
-									key={path}
+							{channelPaths.map((path, index) => (
+								<Link
+									key={index}
+									href={`/channels/${path}`}
 								>
-									{path}
-								</li>
+									<li className="text-lg">#{path}</li>
+								</Link>
 							))}
 						</ul>
 					</div>

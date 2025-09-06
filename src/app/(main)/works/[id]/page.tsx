@@ -97,7 +97,15 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						height={imagesWithDimensions.map(({ height }) => height ?? 0)}
 					/>
 				</div>
-				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
+
+				<Link
+					href={`https://q.trap.jp/messages/${id}`}
+					size="sm"
+					className="text-base"
+				>
+					<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
+				</Link>
+
 				<div className=" flex flex-row justify-end gap-2 p-2 ">
 					<LikeButton
 						isLiked={isLiked}
@@ -124,6 +132,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						#{path}
 					</Link>
 					<p className="text-sm">{description ?? content}</p>
+
 					<div className="flex flex-wrap items-center">
 						<Link
 							href="https://q.trap.jp/channels/team/graphics/progress"
