@@ -21,6 +21,8 @@ import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
 import TraqAvatar from "@/components/TraqAvatar";
 import { ReviewType } from "@/generated/prisma";
+import { UserRoundIcon } from "lucide-react";
+import { use } from "react";
 
 type Params = {
 	id: string;
@@ -178,7 +180,10 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			{/* 3. 右側の要素: こちらもflex-1で幅を均等に分ける */}
 			<div className="sticky top-4 flex flex-2 flex-col items-start justify-start bg-gray-50  dark:bg-gray-900 p-8 rounded-sm h-auto">
 				{/* ここでが送信フォーム */}
-				<ReviewForm />
+				<ReviewForm
+					userid={userme.id}
+					workid={id}
+				/>
 				<Divider className="my-2" />
 				<div className="flex flex-col gap-2 w-full overflow-y-auto">
 					{reviews.map(({ type, contents, updatedAt }) => (
