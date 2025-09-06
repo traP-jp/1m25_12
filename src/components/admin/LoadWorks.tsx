@@ -2,6 +2,7 @@
 
 import { loadWorks } from "@/actions/loadWorks";
 import Form from "next/form";
+import { channelPathToId } from "@/actions/loadChannels";
 
 type Props = {
 	channelId?: string;

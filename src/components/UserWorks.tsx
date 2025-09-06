@@ -57,8 +57,6 @@ export default async function UserWorks({ id, name, page }: Props) {
 
 			const files = await extractFiles(content);
 
-			console.log(files);
-
 			const fileid = files;
 
 			const fileId = await traqClient.users
@@ -82,7 +80,6 @@ export default async function UserWorks({ id, name, page }: Props) {
 					fileid.map(async fileid => {
 						const filepath = await getFilePath(fileid);
 						const fileInfo = await getFileMeta(fileid);
-						console.log(filepath);
 						if (fileInfo !== null) {
 							const extension = fileInfo.name
 								? (fileInfo.name.split(".").pop()?.toLowerCase() ?? "")
@@ -96,7 +93,6 @@ export default async function UserWorks({ id, name, page }: Props) {
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
 
-			// console.log(fileInfos);
 			return { work, fileid, iconfileid, content, fileInfos };
 		})
 	);

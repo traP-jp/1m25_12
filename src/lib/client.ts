@@ -4,6 +4,11 @@ export const client = Axios.create({
 	baseURL: "/api",
 });
 
-export const getFilePath = (fileId: string) => {
+type Option = {
+	thumbnail?: boolean;
+};
+
+export const getFilePath = (fileId: string, { thumbnail = false }: Option = {}) => {
+	if (thumbnail) return `/api/files/${fileId}?thumbnail=true`;
 	return `/api/files/${fileId}`;
 };
