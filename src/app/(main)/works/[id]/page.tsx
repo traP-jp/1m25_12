@@ -125,7 +125,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				<div className="gap-2 flex flex-col ml-4 mr-4">
 					<h1 className="text-lg font-bold">{name}</h1>
 					<Link
-						href={`https://q.trap.jp/channels/${path}`}
+						href={`/channels/${path}`}
 						size="sm"
 						className="text-base"
 					>
@@ -155,25 +155,24 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<div className="flex flex-col gap-2 p-4">
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
-							<TraqAvatar
-								username={authorInfo.name}
-								alt={authorInfo.displayName}
-								size="lg"
-							/>
+							<Link
+								href={`/users/${authorInfo.name}`}
+								className="flex items-center gap-2"
+							>
+								<TraqAvatar
+									username={authorInfo.name}
+									alt={authorInfo.displayName}
+									size="lg"
+								/>
 
-							{await Promise.all(
-								author.map(async ({ id, name }) => {
-									const { displayName } = await getUserInfo(id);
-									return (
-										<div key={id}>
-											<span>{displayName}</span>
-											<br />
-											<span className="text-gray-500">@{name}</span>
-										</div>
-									);
-								})
-							)}
-
+								<div>
+									<span className=" text-gray-900 dark:text-white font-semibold">
+										{authorInfo.displayName}
+									</span>
+									<br />
+									<span className="text-gray-500">@{authorInfo.name}</span>
+								</div>
+							</Link>
 							<BookmarkButton
 								isBookmarked={isBookmarked}
 								id={id}

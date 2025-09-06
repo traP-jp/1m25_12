@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { FileInfo, UserDetail } from "traq-bot-ts";
 import Pagination from "@/components/WorkList_Pagination_User";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
+import { ReviewType } from "@/generated/prisma";
 
 type Props = {
 	id: string;
@@ -51,34 +52,16 @@ export default async function UserWorks({ id, name, page }: Props) {
 
 	const totalPages = Math.ceil(totalWorks / PAGE_SIZE);
 
-	const worksdetail = await Promise.all(
+	const workDetails = await Promise.all(
 		worksRaw.map(async work => {
-			const { content, updatedAt: updatedAt1 } = await getMessage(work.id).catch(notFound);
+			const { content } = await getMessage(work.id).catch(notFound);
 
 			const files = await extractFiles(content);
-
 			const fileid = files;
-
-			const fileId = await traqClient.users
-				.getUser(work.author.id ?? "")
-				.then(async response => ({
-					key: work.id,
-					...((await response.json()) as UserDetail),
-				}))
-				.catch(() => ({
-					key: work.id,
-					name,
-					displayName: "",
-					iconFileId: "",
-					createdAt: new Date(),
-				}));
-
-			const iconfileid = fileId.iconFileId;
 
 			const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
 				await Promise.all(
 					fileid.map(async fileid => {
-						const filepath = await getFilePath(fileid);
 						const fileInfo = await getFileMeta(fileid);
 						if (fileInfo !== null) {
 							const extension = fileInfo.name
@@ -93,14 +76,14 @@ export default async function UserWorks({ id, name, page }: Props) {
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
 
-			return { work, fileid, iconfileid, content, fileInfos };
+			return { work, fileid, content, fileInfos };
 		})
 	);
 
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 			<Pagination totalPages={totalPages} />
-			<WorkList workdetails={worksdetail} />
+			<WorkList workDetails={workDetails} />
 			<Pagination totalPages={totalPages} />
 		</section>
 	);

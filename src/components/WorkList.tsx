@@ -1,9 +1,10 @@
 import { Card, CardFooter } from "@heroui/card";
 import TraqImage from "./TraqImage";
-import Link from "next/link";
 import { User, Work } from "@/generated/prisma";
 import { FileInfo } from "traq-bot-ts";
 import TraqAvatar from "./TraqAvatar";
+import { Link } from "./Link";
+import { traqClient } from "@/lib/traq";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -36,20 +37,19 @@ export const PenIcon = ({
 type WorkDetail = {
 	work: Work & { author: User };
 	fileid: string[];
-	iconfileid: string;
 	content: string;
 	fileInfos: { fileInfo: FileInfo; extension: string }[];
 };
 
 type Props = {
-	workdetails: WorkDetail[];
+	workDetails: WorkDetail[];
 };
 
-export default function WorkList({ workdetails }: Props) {
+export default function WorkList({ workDetails }: Props) {
 	return (
 		<div>
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{workdetails.map(({ work, fileid, iconfileid, content, fileInfos }) => {
+				{workDetails.map(({ work, fileid, content, fileInfos }) => {
 					let mediaComponent;
 
 					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
@@ -86,38 +86,46 @@ export default function WorkList({ workdetails }: Props) {
 					}
 
 					return (
-						<Link
-							href={`/works/${work.id}`}
+						<Card
+							shadow="md"
+							className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
 							key={work.id}
 						>
-							<Card
-								isPressable
-								shadow="md"
-								className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
+							<Link
+								href={`/works/${work.id}`}
 								key={work.id}
 							>
 								{mediaComponent}
-								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
-									<div className="flex items-end absolute bottom-20 left-1 right-1">
-										<TraqAvatar
-											username={work.author.name}
-											size="lg"
-											alt={work.author.name}
-										/>
-										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
-											@{work.author.name}
-										</p>
-									</div>
-									<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+							</Link>
+							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
+								<Link
+									href={`/users/${work.author.name}`}
+									className="flex items-end absolute bottom-20 left-1 right-1"
+								>
+									<TraqAvatar
+										username={work.author.name}
+										size="lg"
+										alt={work.author.name}
+									/>
+									<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
+										@{work.author.name}
+									</p>
+								</Link>
+
+								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+									<Link
+										href={`https://q.trap.jp/messages/${work.id}`}
+										key={work.id}
+									>
 										<p className="  font-light text-xs text-black/80 dark:text-white/80">
 											{(work.description ?? content).length > 64
 												? (work.description ?? content).slice(0, 64) + "..."
 												: (work.description ?? content)}
 										</p>
-									</div>
-								</CardFooter>
-							</Card>
-						</Link>
+									</Link>
+								</div>
+							</CardFooter>
+						</Card>
 					);
 				})}
 			</div>
