@@ -10,6 +10,7 @@ import { Link } from "@/components/Link";
 import TeamIcon from "@/components/TeamIcon";
 import { TEAM_LIST } from "@/lib/constants";
 import UserWorks from "@/components/UserWorks";
+import UserSetting from "@/components/UserSetting";
 
 type Params = {
 	name: string;
