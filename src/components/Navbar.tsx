@@ -40,7 +40,6 @@ export const Navbar = () => {
 			isMenuOpen={isMenuOpen}
 			onMenuOpenChange={setIsMenuOpen}
 		>
-			{" "}
 			<NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
 			<NavbarContent
 				className="basis-1/5 sm:basis-full"
@@ -120,7 +119,7 @@ export const Navbar = () => {
 				{/* <NavbarMenuToggle /> */}
 			</NavbarContent>
 			<NavbarMenu>
-				<NavbarMenuItem>{<Sidebar />}</NavbarMenuItem>
+				<NavbarMenuItem>{<Sidebar onPress={() => setIsMenuOpen(false)} />}</NavbarMenuItem>
 			</NavbarMenu>
 		</HeroUINavbar>
 	);

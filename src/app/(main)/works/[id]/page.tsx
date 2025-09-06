@@ -15,7 +15,7 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
-import TraqAvater from "@/components/TraqAvater";
+import TraqAvatar from "@/components/TraqAvatar";
 
 type Params = {
 	id: string;
@@ -143,7 +143,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<div className="flex flex-col gap-2 p-4">
 						<h4 className="font-bold">投稿者</h4>
 						<div className="flex flex-row items-center gap-2">
-							<TraqAvater
+							<TraqAvatar
 								fileId={authorInfo.iconFileId}
 								alt={authorInfo.displayName}
 								size="lg"

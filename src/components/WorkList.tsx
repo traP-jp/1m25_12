@@ -3,7 +3,7 @@ import TraqImage from "./TraqImage";
 import Link from "next/link";
 import { User, Work } from "@/generated/prisma";
 import { FileInfo } from "traq-bot-ts";
-import TraqAvater from "./TraqAvater";
+import TraqAvatar from "./TraqAvatar";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -56,14 +56,17 @@ export default function WorkList({ workdetails }: Props) {
 
 					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
 						mediaComponent = (
-							<TraqImage
-								removeWrapper
-								className="object-cover h-[200px] w-full rounded-b-none"
-								fileId={fileid[0]}
-								alt={work.description ?? ""}
-								height={200}
-								loading="lazy"
-							/>
+							<div className="h-[200px] w-full relative">
+								<TraqImage
+									removeWrapper
+									className="object-cover w-full rounded-b-none"
+									fileId={fileid[0]}
+									fill
+									placeholder="empty"
+									alt={work.description ?? ""}
+									priority
+								/>
+							</div>
 						);
 					} else if (
 						["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(
@@ -97,10 +100,11 @@ export default function WorkList({ workdetails }: Props) {
 								{mediaComponent}
 								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 									<div className="flex items-end absolute bottom-20 left-1 right-1">
-										<TraqAvater
+										<TraqAvatar
 											fileId={iconfileid}
 											size="lg"
 											alt={work.author.name}
+											loading="lazy"
 										/>
 										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
 											@{work.author.name}

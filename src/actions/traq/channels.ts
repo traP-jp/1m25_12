@@ -30,6 +30,7 @@ const limitMax = 200;
 
 export async function getChannelMessages(channelId: string) {
 	const { totalMessageCount } = await getChannelStats(channelId);
+	console.log(totalMessageCount / limitMax);
 	return Promise.all(
 		[...Array(Math.ceil(totalMessageCount / limitMax)).keys()].map(index =>
 			traqClient.channels

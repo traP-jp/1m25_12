@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalContent, ModalBody, useDisclosure, ModalHeader } from "@heroui/modal";
-import { Button } from "@heroui/button"; // NextUI/HeroUIのModalをインポート
+import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/modal";
 import { Image } from "@heroui/image";
 
 // UserPageから画像のIDリストを受け取る
