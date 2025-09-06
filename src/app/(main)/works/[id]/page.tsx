@@ -112,7 +112,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				<div className="gap-2 flex flex-col ml-4 mr-4">
 					<h1 className="text-lg font-bold">{name}</h1>
 					<Link
-						href={`https://q.trap.jp/channels/${path}`}
+						href={`/channels/${path}`}
 						size="sm"
 						className="text-base"
 					>

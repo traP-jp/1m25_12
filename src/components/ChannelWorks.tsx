@@ -11,6 +11,7 @@ import { title } from "@/components/primitives";
 import Pagination from "@/components/WorkList_Pagination_Channel";
 import { redirect } from "next/navigation";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
+import { Link } from "./Link";
 
 type Props = {
 	path: string[];
@@ -48,7 +49,7 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 
 	const totalPages = Math.ceil(totalWorks / PAGE_SIZE);
 
-	const worksdetail = await Promise.all(
+	const workDetails = await Promise.all(
 		worksRaw.map(async work => {
 			const { content } = await getMessage(work.id).catch(notFound);
 
@@ -56,21 +57,6 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 
 			const fileid = files;
 
-			const author = await traqClient.users
-				.getUser(work.author.id ?? "")
-				.then(async response => ({
-					key: work.id,
-					...((await response.json()) as UserDetail),
-				}))
-				.catch(() => ({
-					key: work.id,
-					name: "",
-					displayName: "",
-					iconFileId: "",
-					createdAt: new Date(),
-				}));
-
-			const iconfileid = author.iconFileId;
 			const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
 				await Promise.all(
 					fileid.map(async fileid => {
@@ -87,17 +73,25 @@ export default async function ChannelWorks({ path, id, page }: Props) {
 			).filter(
 				(item): item is { fileInfo: FileInfo; extension: string } => item !== undefined
 			);
-			return { work, fileid, iconfileid, content, fileInfos };
+			return { work, fileid, content, fileInfos };
 		})
 	);
 
 	return (
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 			<div className="mb-2">
-				<h2 className={title({ size: "sm" })}>{pathString} の作品</h2>
+				<h2 className={title({ size: "sm" })}>
+					<Link
+						className={title({ size: "sm" })}
+						href={`https://q.trap.jp/channels/${pathString}`}
+					>
+						#{pathString}
+					</Link>{" "}
+					の作品
+				</h2>
 			</div>
 			<Pagination totalPages={totalPages} />
-			<WorkList workdetails={worksdetail} />
+			<WorkList workDetails={workDetails} />
 			<Pagination totalPages={totalPages} />
 		</section>
 	);
