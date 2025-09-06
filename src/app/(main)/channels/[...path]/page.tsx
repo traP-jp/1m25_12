@@ -1,9 +1,10 @@
 "use server";
 
+import { channelPathToId } from "@/actions/loadChannels";
 import ChannelWorks from "@/components/ChannelWorks";
 
 type Params = {
-	id: string;
+	path: string[];
 };
 
 type SearchParams = {
@@ -17,11 +18,14 @@ export default async function ChannelWorksPage({
 	params: Promise<Params>;
 	searchParams: Promise<SearchParams>;
 }) {
-	const { id } = await params;
+	const { path } = await params;
 	const { page } = await searchParams;
+
+	const id = await channelPathToId(path);
 
 	return (
 		<ChannelWorks
+			path={path}
 			id={id}
 			page={page}
 		/>

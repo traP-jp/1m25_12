@@ -27,7 +27,6 @@ export const Navbar = () => {
 
 		// 2. 入力値が空でなければ検索処理を実行
 		if (query.trim()) {
-			console.log(`「${query}」で検索を実行します`);
 			// ここにAPIリクエストやページ遷移などの検索ロジックを記述
 		}
 	};
@@ -40,7 +39,6 @@ export const Navbar = () => {
 			isMenuOpen={isMenuOpen}
 			onMenuOpenChange={setIsMenuOpen}
 		>
-			{" "}
 			<NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
 			<NavbarContent
 				className="basis-1/5 sm:basis-full"
@@ -120,7 +118,7 @@ export const Navbar = () => {
 				{/* <NavbarMenuToggle /> */}
 			</NavbarContent>
 			<NavbarMenu>
-				<NavbarMenuItem>{<Sidebar />}</NavbarMenuItem>
+				<NavbarMenuItem>{<Sidebar onPress={() => setIsMenuOpen(false)} />}</NavbarMenuItem>
 			</NavbarMenu>
 		</HeroUINavbar>
 	);

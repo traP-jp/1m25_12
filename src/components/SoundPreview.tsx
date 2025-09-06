@@ -39,7 +39,7 @@ const AudioPreview = ({ audioSrc }: AudioPreviewProps) => {
 				alt="ジャケット画像"
 				fill
 				className="object-cover"
-				priority
+				loading="lazy"
 			/>
 
 			<div className="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center">

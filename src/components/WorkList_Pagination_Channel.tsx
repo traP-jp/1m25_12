@@ -10,13 +10,13 @@ type Props = {
 export default function Pagination_channel({ totalPages }: Props) {
 	const router = useRouter();
 
-	const { id } = useParams();
+	const { path } = useParams();
 	const page = useSearchParams().get("page") ?? "1";
 
 	const currentPage = Number(page);
 
 	const handleChange = (page: number) => {
-		router.push(`/channels/${id}?page=${page}`);
+		router.push(`/channels/${(path as string[]).join("/")}?page=${page}`);
 	};
 
 	return (
