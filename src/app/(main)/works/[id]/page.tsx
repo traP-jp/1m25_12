@@ -15,12 +15,13 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
-import {bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
+import { bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
 import { isWorkLikedByUser } from "@/actions/likedWorks";
 import { getMe } from "@/actions/getMe";
-import BookmarkButton  from "@/components/BookmarkButton";
+import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
 import TraqAvater from "@/components/TraqAvater";
+import { $Enums, ReviewType } from "@/generated/prisma";
 
 type Params = {
 	id: string;
@@ -74,9 +75,21 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		})
 	);
 
-  const userme = await getMe();
+	const userme = await getMe();
 	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
-	const isLiked = await isWorkLikedByUser(id,userme.id);
+	const isLiked = await isWorkLikedByUser(id, userme.id);
+
+	const fileInfos: FileInfo[] = await Promise.all(
+		files.map(async fileid => {
+			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
+			return fileInfo;
+		})
+	);
+
+	const reviews = await prisma.review.findMany({
+		where: { workId: id },
+		orderBy: { updatedAt: "desc" },
+	});
 
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">
@@ -162,10 +175,10 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							)}
 
 							<BookmarkButton
-							isBookmarked = {isBookmarked}
-							id = {id}
-							userid= {userme.id}
-						/>
+								isBookmarked={isBookmarked}
+								id={id}
+								userid={userme.id}
+							/>
 						</div>
 					</div>
 				</div>
@@ -177,126 +190,21 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				<ReviewForm />
 				<Divider className="my-2" />
 				<div className="flex flex-col gap-2 w-full overflow-y-auto">
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
-					<div className="flex flex-col w-full">
-						<h2 className="font-semibold text-lg">Good</h2>
-						<p className="text-gray-700 dark:text-gray-50 p-3 ">
-							レビューが表示されます
-						</p>
-						<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-							投稿日: 2025/5/2 22:55
-						</p>
-						<Divider className="my-2" />
-					</div>
+					{reviews.map(({ type, contents, updatedAt }) => (
+						<div
+							className="flex flex-col w-full"
+							key={updatedAt.toString()}
+						>
+							<h2 className="font-semibold text-lg">
+								{type === ReviewType.GOOD ? "Good" : "More"}
+							</h2>
+							<p className="text-gray-700 dark:text-gray-50 p-3 ">{contents}</p>
+							<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
+								投稿日: {updatedAt.toLocaleString()}
+							</p>
+							<Divider className="my-2" />
+						</div>
+					))}
 				</div>
 			</div>
 		</div>
