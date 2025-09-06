@@ -49,7 +49,7 @@ export const Sidebar = () => {
                     </Link>
                 </li>
                 <li className="m-4">
-                   <Link href="/worklist/channel/7dc7d0e1-a7b9-4294-ba3e-1149a4c42c718/1">
+                   <Link href="/worklist/channel/7dc7d0e1-a7b9-4294-ba3e-1149a4c42c71/1">
                         <h2  className="flex items-center  dark:text-white  text-gray-700 text-xl font-base">
                             <span className="i-material-symbols-flag  mr-2 text-2xl"></span>
                             #team/CTF/progress
