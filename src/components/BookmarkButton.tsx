@@ -1,23 +1,7 @@
 "use client";
 
-import { getChannelPath } from "@/actions/traq/channels";
-import { getMessage } from "@/actions/traq/messages";
-import { getUserInfo } from "@/actions/traq/users";
-import { extractFiles } from "@/lib/utils";
-import { notFound } from "next/navigation";
-import { traqClient } from "@/lib/traq";
-import { prisma } from "@/lib/prisma";
-import { UserDetail } from "traq-bot-ts";
 import { Button } from "@heroui/button";
-import TrapIcon from "@/components/TrapIcon";
-import { Link } from "@heroui/link";
-import { Divider } from "@heroui/divider";
-import ReviewForm from "@/components/ReViewForm";
-import ImageGallery from "@/components/PicturePreview";
-import { getImageSize } from "@/actions/traq/getImageSize";
-import { getFilePath } from "@/lib/client";
-import { bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
-import { getMe } from "@/actions/getMe";
+import { bookmarksWork, UnbookmarkWork } from "@/actions/bookmarkWorks";
 import { useState } from "react";
 
 type Params = {
@@ -27,8 +11,7 @@ type Params = {
 };
 
 export default function BookmarkButton({ isBookmarked, id, userid }: Params) {
-
-    const [bookmarked, setBookmarked] = useState(isBookmarked);
+	const [bookmarked, setBookmarked] = useState(isBookmarked);
 
 	return (
 		<Button
@@ -57,7 +40,6 @@ export default function BookmarkButton({ isBookmarked, id, userid }: Params) {
 				}
 			></span>
 			{bookmarked ? "ブックマーク済み" : "ブックマーク"}
-			
 		</Button>
 	);
 }
