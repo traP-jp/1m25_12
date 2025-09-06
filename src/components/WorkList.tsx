@@ -1,11 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { traqClient } from "@/lib/traq";
 import { Card, CardFooter } from "@heroui/card";
-import { UserDetail } from "traq-bot-ts";
 import TraqImage from "./TraqImage";
-import { title } from "@/components/primitives";
-import { Button } from "@heroui/button";
-import TrapIcon from "./TrapIcon";
+import Link from "next/link";
+import { User, Work } from "@/generated/prisma";
+import { FileInfo } from "traq-bot-ts";
+import TraqAvater from "./TraqAvater";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -35,75 +33,89 @@ export const PenIcon = ({
 	);
 };
 
-export default async function UserList() {
-	const usersRaw = (await prisma.user.findMany({ take: 10 })).toReversed();
+type WorkDetail = {
+	work: Work & { author: User };
+	fileid: string[];
+	iconfileid: string;
+	content: string;
+	fileInfos: { fileInfo: FileInfo; extension: string }[];
+};
 
-	const users = await Promise.all(
-		usersRaw.map(({ id, name }) => {
-			return traqClient.users
-				.getUser(id ?? "")
-				.then(async response => ({
-					key: id,
-					...((await response.json()) as UserDetail),
-				}))
-				.catch(() => ({
-					key: id,
-					id,
-					name,
-					displayName: "",
-					iconFileId: "",
-					createdAt: new Date(),
-				}));
-		})
-	);
+type Props = {
+	workdetails: WorkDetail[];
+};
 
+export default function WorkList({ workdetails }: Props) {
 	return (
 		<div>
-			<div className="mb-2">
-				<h2 className={title({ size: "sm" })}>Users</h2>
-			</div>
-
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{users.map(({ key, name, displayName, iconFileId }) => {
-					return (
-						<Card
-							isPressable
-							shadow="md"
-							className="col-span-12 sm:col-span-12 h-[320px]"
-							key={key}
-						>
+				{workdetails.map(({ work, fileid, iconfileid, content, fileInfos }) => {
+					console.log(work, fileid, iconfileid, content, fileInfos[0]);
+
+					let mediaComponent;
+
+					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
+						mediaComponent = (
 							<TraqImage
 								removeWrapper
-								className="z-0  object-cover h-[200px]  w-[200px] rounded-b-none"
-								fileId={iconFileId}
-								alt={displayName}
+								className="object-cover h-[200px] w-full rounded-b-none"
+								fileId={fileid[0]}
+								alt={work.description ?? ""}
+								height={200}
+								loading="lazy"
 							/>
-							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
-								<div className="flex items-end absolute bottom-20 left-1 right-1">
-									<TrapIcon
-										fileId={iconFileId}
-										alt={displayName}
-									/>
-									<p className=" font-light mt-3 text-base text-black/80 dark:text-white/80 ">
-										@{name}
-									</p>
-								</div>
-								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
-									<p className="  font-semibold text-base text-black/80 dark:text-white/80">
-										作品名をいれる
-									</p>
-								</div>
-								<Button
-									size="sm"
-									color="secondary"
-									startContent={<PenIcon />}
-									variant="solid"
-									className="font-normal px-2 text-xs absolute bottom-2 right-2"
-								>
-									レビューを書く
-								</Button>
-							</CardFooter>
-						</Card>
+						);
+					} else if (
+						["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(
+							fileInfos[0]?.extension
+						)
+					) {
+						mediaComponent = (
+							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">music</span>
+							</div>
+						);
+					} else {
+						mediaComponent = (
+							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">No Preview</span>
+							</div>
+						);
+					}
+
+					return (
+						<Link
+							href={`/works/${work.id}`}
+							key={work.id}
+						>
+							<Card
+								isPressable
+								shadow="md"
+								className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
+								key={work.id}
+							>
+								{mediaComponent}
+								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
+									<div className="flex items-end absolute bottom-20 left-1 right-1">
+										<TraqAvater
+											fileId={iconfileid}
+											size="lg"
+											alt={work.author.name}
+										/>
+										<p className=" font-light mt-3 text-sm text-black/80 dark:text-white/80 ">
+											@{work.author.name}
+										</p>
+									</div>
+									<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
+										<p className="  font-light text-xs text-black/80 dark:text-white/80">
+											{(work.description ?? content).length > 64
+												? (work.description ?? content).slice(0, 64) + "..."
+												: (work.description ?? content)}
+										</p>
+									</div>
+								</CardFooter>
+							</Card>
+						</Link>
 					);
 				})}
 			</div>

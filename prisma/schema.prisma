@@ -17,7 +17,7 @@ model User {
 
     channels  UserChannel[]
     reviews   Review[]
-    works     Work[]    @relation("user_work_mappings")
+    works     Work[]
     tags      Tag[]
     bookmarks Work[]    @relation("user_bookmarks")
     likes Work[]    @relation("user_likes")
@@ -28,10 +28,12 @@ model User {
 
 
 model Channel {
-    id String @id @default(uuid(7))
+    id String @id
 
     works Work[]
     users UserChannel[]
+
+    @@map("channels")
 }
 
 model UserChannel {
@@ -47,6 +49,7 @@ model UserChannel {
     updatedAt DateTime @updatedAt
 
     @@id([channelId, ownerId])
+    @@map("user_channels")
 }
 
 model Review {
@@ -102,7 +105,8 @@ model Tag {
 model Work {
     id      String @id
 
-    authors User[] @relation("user_work_mappings")
+    author User @relation(fields: [authorId], references: [id])
+    authorId String @map("author_id")
 
     channel  Channel  @relation(fields: [channelId], references: [id])
     channelId String @map("channel_id")
@@ -128,4 +132,5 @@ model Work {
     deletedAt DateTime? @map("deleted_at")
 
     @@map("works")
+    @@index([authorId, channelId])
 }
