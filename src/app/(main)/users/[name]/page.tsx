@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { Link } from "@/components/Link";
 import { WorksTabs } from "@/components/WorksTabs";
 import TeamIcon from "@/components/TeamIcon";
-import { getUserTeams } from "@/actions/getUserTeams";
+import { TEAM_LIST } from "@/lib/constants";
 
 type Params = {
 	name: string;
@@ -18,7 +18,7 @@ type Params = {
 export default async function UserPage({ params }: { params: Promise<Params> }) {
 	const { name } = await params;
 	const { id, displayName, iconFileId } = await getUser(name).catch(notFound);
-	const { bio } = await getUserInfo(id).catch(notFound);
+	const { bio, groups } = await getUserInfo(id).catch(notFound);
 
 	const channels = await prisma.userChannel.findMany({
 		where: { ownerId: id },
@@ -28,9 +28,6 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const channelPaths = await Promise.all(
 		channels.map(channel => getChannelPath(channel.channelId))
 	);
-
-	const userTeams = await getUserTeams(id);
-	const ALL_TEAM_NAMES = ["graphics", "sound", "algorithm", "ctf", "kaggle", "sysad", "game"];
 
 	return (
 		<div>
@@ -71,14 +68,18 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							<div className="justify-center text-left">
 								<span className="text-xl">所属</span>
 								<ul className="flex flex-wrap gap-2 mt-2">
-									{ALL_TEAM_NAMES.map(teamName => {
-										const isMember = userTeams.includes(teamName);
+									{TEAM_LIST.map(team => {
+										const isMember = groups.includes(team.id);
 										return (
 											<li
-												key={teamName}
-												className={`${!isMember ? "opacity-20" : ""}`}
+												key={team.id}
+												className={
+													isMember
+														? ""
+														: "grayscale brightness-0 opacity-20"
+												}
 											>
-												<TeamIcon teamName={teamName} />
+												<TeamIcon teamName={team.name} />
 											</li>
 										);
 									})}
