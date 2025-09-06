@@ -1,3 +1,4 @@
+'use client';
 import {
 	Navbar as HeroUINavbar,
 	NavbarContent,
@@ -10,12 +11,28 @@ import {
 import { Link } from "@/components/Link";
 import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
-
+import { useState } from 'react';
 import { siteConfig } from "../config/site";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { GithubIcon } from "@/components/Icons";
+import { Input } from "@heroui/input";
 
 export const Navbar = () => {
+
+	const [query, setQuery] = useState('');
+
+  // フォーム送信時に実行される関数
+  const handleSearch = (event) => {
+    // 1. ページの再読み込みを防止
+    event.preventDefault();
+
+    // 2. 入力値が空でなければ検索処理を実行
+    if (query.trim()) {
+      console.log(`「${query}」で検索を実行します`);
+      // ここにAPIリクエストやページ遷移などの検索ロジックを記述
+    }
+  };
+
 	return (
 		<HeroUINavbar
 			maxWidth="xl"
@@ -36,7 +53,7 @@ export const Navbar = () => {
 						<p className="font-bold text-inherit">1m25_12</p>
 					</Link>
 				</NavbarBrand>
-				<ul className="hidden lg:flex gap-4 justify-start ml-2">
+				{/* <ul className="hidden lg:flex gap-4 justify-start ml-2">
 					{siteConfig.navItems.map(item => (
 						<NavbarItem key={item.href}>
 							<Link
@@ -51,10 +68,34 @@ export const Navbar = () => {
 							</Link>
 						</NavbarItem>
 					))}
-				</ul>
+				</ul> */}
 			</NavbarContent>
 
-			<NavbarContent
+
+		<NavbarContent as="div" className="items-center" justify="center">
+		<form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Input
+          classNames={{
+            base: "max-w-full sm:max-w-[10rem] h-10",
+            mainWrapper: "h-full",
+            input: "text-small",
+            inputWrapper:
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+          }}
+          placeholder="作品を検索"
+          size="sm"
+          startContent={
+          <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none shrink-0" />
+        }
+          type="search"
+		value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        />
+
+    </form>
+		</NavbarContent>
+
+		<NavbarContent
 				className="hidden sm:flex basis-1/5 sm:basis-full"
 				justify="end"
 			>
@@ -70,7 +111,8 @@ export const Navbar = () => {
 				</NavbarItem>
 			</NavbarContent>
 
-			<NavbarContent
+
+			{/* <NavbarContent
 				className="sm:hidden basis-1 pl-4"
 				justify="end"
 			>
@@ -83,9 +125,9 @@ export const Navbar = () => {
 				</Link>
 				<ThemeSwitch />
 				<NavbarMenuToggle />
-			</NavbarContent>
+			</NavbarContent> */}
 
-			<NavbarMenu>
+			{/* <NavbarMenu>
 				<div className="mx-4 mt-2 flex flex-col gap-2">
 					{siteConfig.navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>
@@ -105,7 +147,36 @@ export const Navbar = () => {
 						</NavbarMenuItem>
 					))}
 				</div>
-			</NavbarMenu>
+			</NavbarMenu> */}
 		</HeroUINavbar>
 	);
 };
+
+export const SearchIcon = (props) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      focusable="false"
+      height="1em"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="1em"
+      {...props}
+    >
+      <path
+        d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M22 22L20 20"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );

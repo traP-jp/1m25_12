@@ -64,10 +64,18 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		files.map(async fileId => {
 			const { width, height } = await getImageSize(fileId);
 			const filepath = await getFilePath(fileId);
-			console.log(`aiueo${filepath}`);
 			return { id: fileId, width, height, filepath };
 		})
 	);
+
+	const fileInfos: FileInfo[] = await Promise.all(
+		files.map(async (fileid) => {
+			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
+			return fileInfo;
+		})
+	);
+	
+	console.log(fileInfos);
 
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">

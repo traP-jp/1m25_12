@@ -1,0 +1,33 @@
+import { getFilePath } from "@/lib/client";
+import { getChannelPath } from "@/actions/traq/channels";
+import { getMessage } from "@/actions/traq/messages";
+import { getUserInfo } from "@/actions/traq/users";
+import { extractFiles } from "@/lib/utils";
+import { notFound } from "next/navigation";
+import { traqClient } from "@/lib/traq";
+import { prisma } from "@/lib/prisma";
+import { UserDetail } from "traq-bot-ts";
+import { title } from "@/components/primitives";
+import { Work } from "@/generated/prisma";
+import Pagination from '@/components/WorkList_Pagination_Channel';
+import { redirect } from "next/navigation";
+
+type PageProps = {
+  searchParams: {
+    page?: string;
+  };
+};
+
+type Params = {
+    name: string;
+
+};
+
+const PAGE_SIZE = 12; // 1ページあたりの表示件数
+
+export default async function WorkPage({ params }: { params: Promise<Params> }) {
+    const { name } = await params;
+
+    redirect(`/worklist/user/${name}/1`);
+
+}
