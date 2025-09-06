@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { Play, Pause } from "lucide-react";
+import { Image } from "./Image";
 
 type AudioPreviewProps = {
 	audioSrc: string;
-	imageSrc: string;
+	imageSrc?: string;
 };
 
 const AudioPreview = ({ audioSrc }: AudioPreviewProps) => {
@@ -33,37 +33,43 @@ const AudioPreview = ({ audioSrc }: AudioPreviewProps) => {
 	};
 
 	return (
-		<div className="w-full max-w-lg mx-auto aspect-square relative shadow-lg rounded-lg overflow-hidden">
-			<Image
-				src="@/MusicBack.svg"
-				alt="ジャケット画像"
-				fill
-				className="object-cover"
-				loading="lazy"
-			/>
+		<div className="w-full max-w-lg mx-auto aspect-square relative overflow-hidden">
+			<div className="h-12 w-12 relative">
+				<Image
+					removeWrapper
+					src="/MusicBack.svg"
+					alt="ジャケット画像"
+					fill
+					radius="none"
+					className="!opacity-60"
+					loading="lazy"
+				/>
+			</div>
 
-			<div className="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center">
+			<div className="absolute inset-0 bg-opacity-30 flex justify-center items-center">
 				<button
 					onClick={handleTogglePlay}
-					className="bg-white/30 text-white rounded-full p-4 hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
+					className="bg-white/30 text-gray-500 rounded-full p-4 hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
 					aria-label={isPlaying ? "Pause" : "Play"}
 				>
-					{/* 3. isPlayingの状態に応じてアイコンを切り替える */}
 					{isPlaying ? (
-						<Pause size={48} />
+						<Pause
+							size={48}
+							className="z-10 h-[50%]"
+						/>
 					) : (
 						<Play
 							size={48}
-							className="translate-x-1"
+							className="translate-x-1 "
 						/>
 					)}
 				</button>
 			</div>
 
 			<audio
-				ref={audioRef} // 1. 作成したRefをaudio要素に紐付ける
+				ref={audioRef}
 				src={audioSrc}
-				preload="auto"
+				preload="none"
 			/>
 		</div>
 	);

@@ -42,3 +42,6 @@ export const TEAM_LIST = [
 		channelId: "7dc7d0e1-a7b9-4294-ba3e-1149a4c42c71",
 	},
 ];
+
+export const SOUND_EXTENSIONS = ["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"];
+export const PICTURE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "svg"];

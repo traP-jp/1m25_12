@@ -20,9 +20,10 @@ import { getMe } from "@/actions/getMe";
 import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
 import TraqAvatar from "@/components/TraqAvatar";
+import { getFileMeta } from "@/actions/traq/getFileMeta";
+import { PICTURE_EXTENSIONS, SOUND_EXTENSIONS } from "@/lib/constants";
+import SoundPreview from "@/components/SoundPreview";
 import { ReviewType } from "@/generated/prisma";
-import { UserRoundIcon } from "lucide-react";
-import { use } from "react";
 
 type Params = {
 	id: string;
@@ -36,6 +37,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		channelId,
 		name,
 		description,
+		category,
 		updatedAt: updatedAt0,
 	} = await prisma.work
 		.findUniqueOrThrow({
@@ -69,10 +71,17 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 
 	const imagesWithDimensions = await Promise.all(
 		files.map(async fileId => {
-			const { width, height } = await getImageSize(fileId);
+			const { name } = await getFileMeta(fileId);
+			const extension = name ? (name.split(".").pop()?.toLowerCase() ?? "") : "";
+
+			const { width, height } = await getImageSize(fileId).catch(() => ({
+				width: 0,
+				height: 0,
+			}));
+
 			const filepath = await getFilePath(fileId);
 			const blurredFilePath = await getFilePath(fileId, { thumbnail: true });
-			return { id: fileId, width, height, filepath, blurredFilePath };
+			return { id: fileId, extension, width, height, filepath, blurredFilePath };
 		})
 	);
 
@@ -90,14 +99,28 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
 			<div className="flex flex-col flex-3  bg-gray-50 dark:bg-gray-900 rounded-sm">
 				<div className="rounded-t-sm rounded-b-none  bg-blue-50  dark:bg-gray-700 ">
-					<ImageGallery
-						filepaths={imagesWithDimensions.map(({ filepath }) => filepath)}
-						blurredFilePaths={imagesWithDimensions.map(
-							({ blurredFilePath }) => blurredFilePath
-						)}
-						width={imagesWithDimensions.map(({ width }) => width ?? 0)}
-						height={imagesWithDimensions.map(({ height }) => height ?? 0)}
-					/>
+					{(() => {
+						if (PICTURE_EXTENSIONS.includes(imagesWithDimensions[0]?.extension)) {
+							return (
+								<ImageGallery
+									filepaths={imagesWithDimensions.map(({ filepath }) => filepath)}
+									blurredFilePaths={imagesWithDimensions.map(
+										({ blurredFilePath }) => blurredFilePath
+									)}
+									width={imagesWithDimensions.map(({ width }) => width ?? 0)}
+									height={imagesWithDimensions.map(({ height }) => height ?? 0)}
+								/>
+							);
+						}
+
+						if (SOUND_EXTENSIONS.includes(imagesWithDimensions[0]?.extension)) {
+							return (
+								<SoundPreview audioSrc={getFilePath(imagesWithDimensions[0].id)} />
+							);
+						}
+
+						return <p>Not Supported</p>;
+					})()}
 				</div>
 
 				<Link

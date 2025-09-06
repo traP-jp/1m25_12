@@ -4,6 +4,9 @@ import { User, Work } from "@/generated/prisma";
 import { FileInfo } from "traq-bot-ts";
 import TraqAvatar from "./TraqAvatar";
 import { Link } from "./Link";
+import SoundPreview from "./SoundPreview";
+import { getFilePath } from "@/lib/client";
+import { PICTURE_EXTENSIONS, SOUND_EXTENSIONS } from "@/lib/constants";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -51,36 +54,36 @@ export default function WorkList({ workDetails }: Props) {
 				{workDetails.map(({ work, fileid, content, fileInfos }) => {
 					let mediaComponent;
 
-					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
+					if (PICTURE_EXTENSIONS.includes(fileInfos[0]?.extension)) {
 						mediaComponent = (
-							<div className="h-[200px] w-full relative">
-								<TraqImage
-									removeWrapper
-									thumbnail
-									className="object-cover w-full rounded-b-none"
-									fileId={fileid[0]}
-									fill
-									placeholder="empty"
-									alt={work.description ?? ""}
-									loading="lazy"
-								/>
-							</div>
+							<Link href={`/works/${work.id}`}>
+								<div className="h-[200px] w-full relative">
+									<TraqImage
+										removeWrapper
+										thumbnail
+										className="object-cover w-full rounded-b-none"
+										fileId={fileid[0]}
+										fill
+										placeholder="empty"
+										alt={work.description ?? ""}
+										loading="lazy"
+									/>
+								</div>
+							</Link>
 						);
-					} else if (
-						["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(
-							fileInfos[0]?.extension
-						)
-					) {
+					} else if (SOUND_EXTENSIONS.includes(fileInfos[0]?.extension)) {
 						mediaComponent = (
 							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
-								<span className="text-gray-500 text-sm">music</span>
+								<SoundPreview audioSrc={getFilePath(fileid[0])} />
 							</div>
 						);
 					} else {
 						mediaComponent = (
-							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
-								<span className="text-gray-500 text-sm">No Preview</span>
-							</div>
+							<Link href={`https://q.trap.jp/messages/${work.id}`}>
+								<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+									<span className="text-gray-500 text-sm">No Preview</span>
+								</div>
+							</Link>
 						);
 					}
 
@@ -90,12 +93,7 @@ export default function WorkList({ workDetails }: Props) {
 							className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
 							key={work.id}
 						>
-							<Link
-								href={`/works/${work.id}`}
-								key={work.id}
-							>
-								{mediaComponent}
-							</Link>
+							{mediaComponent}
 							<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 								<Link
 									href={`/users/${work.author.name}`}
@@ -113,7 +111,7 @@ export default function WorkList({ workDetails }: Props) {
 
 								<div className="flex items-end absolute  flex-col mt-8 text-left left-4 ">
 									<Link
-										href={`https://q.trap.jp/messages/${work.id}`}
+										href={`/works/${work.id}`}
 										key={work.id}
 									>
 										<p className="  font-light text-xs text-black/80 dark:text-white/80">
@@ -123,9 +121,14 @@ export default function WorkList({ workDetails }: Props) {
 										</p>
 									</Link>
 								</div>
-								<span className="block absolute bottom-0.5 right-3 text-xs text-gray-500 text-right">
+
+								<Link
+									href={`https://q.trap.jp/messages/${work.id}`}
+									key={work.id}
+									className="block absolute bottom-0.5 right-3 text-xs text-gray-500 text-right"
+								>
 									{work.createdAt.toLocaleString()}
-								</span>
+								</Link>
 							</CardFooter>
 						</Card>
 					);
