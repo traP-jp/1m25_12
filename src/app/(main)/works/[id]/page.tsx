@@ -15,7 +15,12 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
-import TraqAvatar from "@/components/TraqAvatar";
+import {bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
+import { isWorkLikedByUser } from "@/actions/likedWorks";
+import { getMe } from "@/actions/getMe";
+import BookmarkButton  from "@/components/BookmarkButton";
+import LikeButton from "@/components/LikeButton";
+import TraqAvater from "@/components/TraqAvater";
 
 type Params = {
 	id: string;
@@ -69,6 +74,10 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		})
 	);
 
+  const userme = await getMe();
+	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
+	const isLiked = await isWorkLikedByUser(id,userme.id);
+
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
@@ -85,16 +94,11 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				</div>
 				<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
 				<div className=" flex flex-row justify-end gap-2 p-2 ">
-					<Button
-						isIconOnly
-						size="md"
-						variant={undefined} // 背景を少しつけるスタイル
-						aria-label="Add tag" // スクリーンリーダー用の説明
-						className="mr-2 text-gray-900 dark:hover:text-pink-400 dark:text-white hover:text-pink-400"
-					>
-						{/* いいねされているときはi-material-symbols-favoriteにしてほしい */}
-						<span className="i-material-symbols-favorite-outline text-lg"></span>
-					</Button>
+					<LikeButton
+						isLiked={isLiked}
+						id={id}
+						userid={userme.id}
+					/>
 					<Button
 						isIconOnly
 						size="md"
@@ -144,21 +148,24 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 								size="lg"
 							/>
 
-							<div>
-								<span>{authorInfo.displayName}</span>
-								<br />
-								<span className="text-gray-500">@{authorInfo.name}</span>
-							</div>
-							<Button
-								size="md"
-								radius="full"
-								color="secondary"
-								className="ml-auto"
-							>
-								<span className="i-material-symbols-bookmark-outline"></span>
-								{/* ブックマークされているときはi-material-symbols-bookmarkにしてほしい */}
-								ブックマーク
-							</Button>
+							{await Promise.all(
+								author.map(async ({ id, name }) => {
+									const { displayName } = await getUserInfo(id);
+									return (
+										<div key={id}>
+											<span>{displayName}</span>
+											<br />
+											<span className="text-gray-500">@{name}</span>
+										</div>
+									);
+								})
+							)}
+
+							<BookmarkButton
+							isBookmarked = {isBookmarked}
+							id = {id}
+							userid= {userme.id}
+						/>
 						</div>
 					</div>
 				</div>
