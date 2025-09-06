@@ -14,6 +14,8 @@ import { title } from "@/components/primitives";
 import { Work } from "@/generated/prisma";
 import Pagination from '@/components/WorkList_Pagination_Channel';
 import { redirect } from "next/navigation";
+import { getFileMeta } from "@/actions/traq/getFileMeta";
+
 
 type PageProps = {
   searchParams: {
@@ -89,7 +91,21 @@ const fileId = await traqClient.users
 
 const iconfileid = fileId.iconFileId;
 // console.log(fileid);
-return {work,fileid,iconfileid,content};
+const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
+	await Promise.all(
+		fileid.map(async (fileid) => {
+			const fileInfo = await getFileMeta(fileid);
+			if (fileInfo !== null) {
+				const extension = fileInfo.name ? (fileInfo.name.split('.').pop()?.toLowerCase() ?? "") : "";
+				return {fileInfo,extension};
+			}
+			return undefined;
+		})
+	)
+).filter((item): item is { fileInfo: FileInfo; extension: string } => item !== undefined);
+
+// console.log(fileInfos);
+return {work,fileid,iconfileid,content,fileInfos};
 
  })
 );

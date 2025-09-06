@@ -7,7 +7,7 @@ import { Button } from "@heroui/button";
 import TrapIcon from "./TrapIcon";
 import Link from "next/link";
 
-import type { Work } from "@prisma/client";
+import type { Work, FileInfo } from "@prisma/client";
 
 export const PenIcon = ({
 	fill = "currentColor",
@@ -42,6 +42,7 @@ type detail = {
 	fileid: string[];
 	iconfileid: string;
 	content: string;
+	fileInfos: { fileInfo: FileInfo; extension: string }[];
 };
 
 type Props = {
@@ -55,7 +56,34 @@ export default function WorkList({ workdetails, totalcount }: Props) {
 	return (
 		<div>
 			<div className="flex flex-wrap items-center justify-center gap-5">
-				{workdetails.map(({ work, fileid, iconfileid, content }) => {
+				{workdetails.map(({ work, fileid, iconfileid, content, fileInfos }) => {
+					
+
+					let mediaComponent;
+					if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileInfos[0]?.extension)) {
+						mediaComponent = (
+							<TraqImage
+								removeWrapper
+								className="object-cover h-[200px] w-full rounded-b-none"
+								fileId={fileid[0]}
+								alt={work.description}
+								height={200}
+							/>
+						);
+					} else if (["mp3", "wav", "ogg", "flac", "aac", "m4a", "wma"].includes(fileInfos[0]?.extension)) {
+						mediaComponent = (
+							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">music</span>
+							</div>
+						);
+					} else {
+						mediaComponent = (
+							<div className="object-cover h-[200px] w-full rounded-b-none flex items-center justify-center bg-gray-200">
+								<span className="text-gray-500 text-sm">No Preview</span>
+							</div>
+						);
+					}
+
 					return (
 						<Link
 							href={`/works/${work.id}`}
@@ -66,15 +94,8 @@ export default function WorkList({ workdetails, totalcount }: Props) {
 								shadow="md"
 								className="col-span-12 sm:col-span-12 h-[320px]  w-[200px] overflow-hidden"
 								key={work.id}
-								
 							>
-								<TraqImage
-									removeWrapper
-									className="object-cover h-[200px] w-full rounded-b-none "
-									fileId={fileid[0]}
-									alt={work.description}
-									height={200}
-								/>
+								 {mediaComponent}
 								<CardFooter className="justify-between   overflow-hidden rounded-middle rounded-t-none z-10 flex-col ">
 									<div className="flex items-end absolute bottom-20 left-1 right-1">
 										<TrapIcon

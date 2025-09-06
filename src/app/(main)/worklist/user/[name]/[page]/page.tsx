@@ -9,12 +9,13 @@ import { extractFiles } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { traqClient } from "@/lib/traq";
 import { prisma } from "@/lib/prisma";
-import { UserDetail } from "traq-bot-ts";
+import { FileInfo, UserDetail } from "traq-bot-ts";
 import { title } from "@/components/primitives";
 import { Work } from "@/generated/prisma";
 import Pagination from '@/components/WorkList_Pagination_User';
 import { redirect } from "next/navigation";
 import { getUser } from "@/actions/traq/users";
+import { getFileMeta } from "@/actions/traq/getFileMeta";
 
 type PageProps = {
   searchParams: {
@@ -78,6 +79,8 @@ const { content, updatedAt: updatedAt1 } = await getMessage(work.id).catch(notFo
 
 const files = await extractFiles(content);
 
+console.log(files);
+
 const fileid = files ;
 
 const fileId = await traqClient.users
@@ -95,15 +98,32 @@ const fileId = await traqClient.users
         }));
 
 const iconfileid = fileId.iconFileId;
-return {work,fileid,iconfileid,content};
+
+const fileInfos: { fileInfo: FileInfo; extension: string }[] = (
+    await Promise.all(
+        fileid.map(async (fileid) => {
+            const filepath = await getFilePath(fileid)
+            const fileInfo = await getFileMeta(fileid);
+            console.log(filepath );
+            if (fileInfo !== null) {
+                const extension = fileInfo.name ? (fileInfo.name.split('.').pop()?.toLowerCase() ?? "") : "";
+                return {fileInfo,extension};
+            }
+            return undefined;
+        })
+    )
+).filter((item): item is { fileInfo: FileInfo; extension: string } => item !== undefined);
+
+// console.log(fileInfos);
+return {work,fileid,iconfileid,content,fileInfos};
 
  })
 );
 const userdetail : UserDetail= await getUserInfo(id ?? "");
 
 
-console.log(worksdetail);
-console.log(worksRaw.length);
+// console.log(worksdetail);
+// console.log(worksRaw.length);
 
     return (
         <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">

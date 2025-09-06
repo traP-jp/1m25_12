@@ -68,6 +68,15 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		})
 	);
 
+	const fileInfos: FileInfo[] = await Promise.all(
+		files.map(async (fileid) => {
+			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
+			return fileInfo;
+		})
+	);
+	
+	console.log(fileInfos);
+
 	return (
 		<div className="flex min-h-screen flex-col md:flex-row gap-1">
 			{/* 2. 左側の要素: flex-1で幅を均等に分ける */}
