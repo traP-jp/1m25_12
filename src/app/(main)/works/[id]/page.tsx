@@ -2,7 +2,6 @@
 
 import { getChannelPath } from "@/actions/traq/channels";
 import { getMessage } from "@/actions/traq/messages";
-import { getUserInfo } from "@/actions/traq/users";
 import { extractFiles } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { traqClient } from "@/lib/traq";
@@ -15,13 +14,13 @@ import ReviewForm from "@/components/ReViewForm";
 import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
-import { bookmarksWork, UnbookmarkWork, isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
+import { isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
 import { isWorkLikedByUser } from "@/actions/likedWorks";
 import { getMe } from "@/actions/getMe";
 import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
-import TraqAvater from "@/components/TraqAvater";
-import { $Enums, ReviewType } from "@/generated/prisma";
+import TraqAvatar from "@/components/TraqAvatar";
+import { ReviewType } from "@/generated/prisma";
 
 type Params = {
 	id: string;
@@ -79,16 +78,9 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
 	const isLiked = await isWorkLikedByUser(id, userme.id);
 
-	const fileInfos: FileInfo[] = await Promise.all(
-		files.map(async fileid => {
-			const fileInfo = await traqClient.files.getFileMeta(fileid).then(res => res.json());
-			return fileInfo;
-		})
-	);
-
 	const reviews = await prisma.review.findMany({
 		where: { workId: id },
-		orderBy: { updatedAt: "desc" },
+		orderBy: { createdAt: "desc" },
 	});
 
 	return (
@@ -199,7 +191,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							</h2>
 							<p className="text-gray-700 dark:text-gray-50 p-3 ">{contents}</p>
 							<p className="text-xs text-gray-500 dark:text-gray-200 ml-auto">
-								投稿日: {updatedAt.toLocaleString()}
+								更新日: {updatedAt.toLocaleString()}
 							</p>
 							<Divider className="my-2" />
 						</div>
