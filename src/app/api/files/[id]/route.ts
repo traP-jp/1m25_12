@@ -24,3 +24,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<Pa
 			.catch(notFound)
 	);
 }
+
+export const config = {
+	api: {
+		responseLimit: false,
+	},
+};
