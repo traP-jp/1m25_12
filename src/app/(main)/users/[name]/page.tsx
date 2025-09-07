@@ -46,7 +46,7 @@ export default async function UserPage({
 			<div>
 				<div className="mb-3">
 					<Link
-						href="/works"
+						href="/"
 						className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
 					>
 						<svg
