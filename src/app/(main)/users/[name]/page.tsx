@@ -63,7 +63,7 @@ export default async function UserPage({
 								d="M15 19l-7-7 7-7"
 							/>
 						</svg>
-						<span>トップページに戻る</span>
+						<span>作品に戻る</span>
 					</Link>
 				</div>
 				<div className="flex gap-8">
