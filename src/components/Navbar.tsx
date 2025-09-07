@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	Navbar as HeroUINavbar,
 	NavbarContent,
@@ -16,9 +17,11 @@ import { Input } from "@heroui/input";
 import { Sidebar } from "./Sidebar";
 import { Image } from "@heroui/image";
 import { FormEvent, useState } from "react";
+import MyAvatar from "@/components/MeAvatar";
 
 export const Navbar = () => {
 	const [query, setQuery] = useState("");
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	// フォーム送信時に実行される関数
 	const handleSearch = (event: FormEvent) => {
@@ -31,7 +34,6 @@ export const Navbar = () => {
 		}
 	};
 
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	return (
 		<HeroUINavbar
 			maxWidth="xl"
@@ -116,6 +118,12 @@ export const Navbar = () => {
 				</Link>
 				<ThemeSwitch />
 				{/* <NavbarMenuToggle /> */}
+			</NavbarContent>
+			<NavbarContent
+				className="hidden sm:inline-flex max-w-fit flex-row"
+				justify="end"
+			>
+				<MyAvatar size="md" />
 			</NavbarContent>
 			<NavbarMenu>
 				<NavbarMenuItem>{<Sidebar onPress={() => setIsMenuOpen(false)} />}</NavbarMenuItem>

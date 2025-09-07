@@ -12,3 +12,7 @@ export const getFilePath = (fileId: string, { thumbnail = false }: Option = {}):
 	if (thumbnail) return `${getFilePath(fileId)}?thumbnail=true`;
 	return `https://1m25-12-repeater.trap.show/files/${fileId}`;
 };
+
+export const getIconPath = (username: string) => {
+	return `https://q.trap.jp/api/v3/public/icon/${username}`;
+};
