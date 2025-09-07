@@ -4,12 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function likeWork(workId: string, userId: string) {
-	const work = await prisma.work.findUnique({ where: { id: workId } });
-	if (!work) throw new Error("Work not found");
-
-	const user = await prisma.user.findUnique({ where: { id: userId } });
-	if (!user) throw new Error("User not found");
-
 	await prisma.work.update({
 		where: { id: workId },
 		data: {
@@ -23,12 +17,6 @@ export async function likeWork(workId: string, userId: string) {
 }
 
 export async function UnlikeWork(workId: string, userId: string) {
-	const work = await prisma.work.findUnique({ where: { id: workId } });
-	if (!work) throw new Error("Work not found");
-
-	const user = await prisma.user.findUnique({ where: { id: userId } });
-	if (!user) throw new Error("User not found");
-
 	await prisma.work.update({
 		where: { id: workId },
 		data: {
