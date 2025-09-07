@@ -12,3 +12,7 @@ export const getFilePath = (fileId: string, { thumbnail = false }: Option = {}) 
 	if (thumbnail) return `/api/files/${fileId}?thumbnail=true`;
 	return `/api/files/${fileId}`;
 };
+
+export const getIconPath = (username: string) => {
+	return `https://q.trap.jp/api/v3/public/icon/${username}`;
+};

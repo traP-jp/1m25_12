@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	Navbar as HeroUINavbar,
 	NavbarContent,
@@ -15,20 +16,12 @@ import { GithubIcon } from "@/components/Icons";
 import { Input } from "@heroui/input";
 import { Sidebar } from "./Sidebar";
 import { Image } from "@heroui/image";
-import { FormEvent } from "react";
-import TrapAvatarMe from "@/components/TrapAvatarMe";
-import { useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import MyAvatar from "@/components/MeAvatar";
+
 export const Navbar = () => {
 	const [query, setQuery] = useState("");
-
-	const [user, setUser] = useState(null);
-
-	useEffect(() => {
-		fetch("/api/me")
-			.then(res => res.json())
-			.then(data => setUser(data));
-	}, []);
-
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	// フォーム送信時に実行される関数
 	const handleSearch = (event: FormEvent) => {
@@ -41,7 +34,6 @@ export const Navbar = () => {
 		}
 	};
 
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	return (
 		<HeroUINavbar
 			maxWidth="xl"
@@ -128,10 +120,10 @@ export const Navbar = () => {
 				{/* <NavbarMenuToggle /> */}
 			</NavbarContent>
 			<NavbarContent
-				className="sm:hidden basis-1 pr-2"
+				className="hidden sm:inline-flex max-w-fit flex-row"
 				justify="end"
 			>
-				<TrapAvatarMe/>
+				<MyAvatar size="md" />
 			</NavbarContent>
 			<NavbarMenu>
 				<NavbarMenuItem>{<Sidebar onPress={() => setIsMenuOpen(false)} />}</NavbarMenuItem>

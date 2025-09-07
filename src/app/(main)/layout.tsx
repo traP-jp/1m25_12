@@ -29,7 +29,6 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-	const user = await getMe();
 	return (
 		<html
 			suppressHydrationWarning
@@ -44,7 +43,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 			>
 				<Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
 					<div className="relative flex flex-col h-screen">
-						<Navbar user={user} />
 						<main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
 							{children}
 						</main>
