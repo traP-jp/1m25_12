@@ -1,16 +1,13 @@
 "use server";
 
 import WorkList from "@/components/WorkList";
-import { getFilePath } from "@/lib/client";
 import { getMessage } from "@/actions/traq/messages";
 import { extractFiles } from "@/lib/utils";
 import { notFound, redirect } from "next/navigation";
-import { traqClient } from "@/lib/traq";
 import { prisma } from "@/lib/prisma";
-import { FileInfo, UserDetail } from "traq-bot-ts";
+import { FileInfo } from "traq-bot-ts";
 import Pagination from "@/components/WorkList_Pagination_User";
 import { getFileMeta } from "@/actions/traq/getFileMeta";
-import { ReviewType } from "@/generated/prisma";
 import { getUserInfo } from "@/actions/traq/users";
 
 type Props = {
@@ -19,7 +16,7 @@ type Props = {
 	page?: number;
 };
 
-const PAGE_SIZE = 60; // 1ページあたりの表示件数
+const PAGE_SIZE = 20; // 1ページあたりの表示件数
 
 export default async function UserWorks({ id, name, page }: Props) {
 	if (!page) {
