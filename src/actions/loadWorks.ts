@@ -1,10 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getChannelStats } from "./traq/channels";
+import { getChannelPath, getChannelStats } from "./traq/channels";
 import { Category } from "@/generated/prisma";
 import { Message } from "traq-bot-ts";
 import { traqClient } from "@/lib/traq";
+import { revalidatePath } from "next/cache";
 
 const limitMax = 50;
 
@@ -48,4 +49,7 @@ export async function loadWorks(formData: FormData | string) {
 			}),
 		Promise.resolve()
 	);
+
+	revalidatePath("/");
+	revalidatePath(`/channels/${await getChannelPath(channelId)}`);
 }
