@@ -29,9 +29,9 @@ func generateEchoError(err error) error {
 	}
 }
 
-func NewTraqClient(accessToken string) (*traq.APIClient, context.Context) {
+func NewTraqClient() (*traq.APIClient, context.Context) {
 	client := traq.NewAPIClient(traq.NewConfiguration())
-	auth := context.WithValue(context.Background(), traq.ContextAccessToken, accessToken)
+	auth := context.WithValue(context.Background(), traq.ContextAccessToken, os.Getenv("TRAQ_BOT_TOKEN"))
 
 	return client, auth
 }
@@ -39,10 +39,9 @@ func NewTraqClient(accessToken string) (*traq.APIClient, context.Context) {
 func getFileDownloadHandler(c echo.Context) error {
 	ctx := c.Request().Context()
 	fileID := c.Param("id")
+	thumbnail := c.QueryParam("thumbnail")
 
-	accessToken := os.Getenv("TRAQ_BOT_TOKEN")
-
-	file, res, err := GetFileDownload(ctx, fileID, accessToken)
+	file, res, err := GetFileDownload(ctx, fileID, thumbnail == "true")
 	if err != nil {
 		return generateEchoError(err)
 	}
@@ -59,10 +58,18 @@ func getFileDownloadHandler(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusOK)
 }
 
-func GetFileDownload(ctx context.Context, fileID, accessToken string) (*os.File, *http.Response, error) {
-	client, auth := NewTraqClient(accessToken)
+func GetFileDownload(ctx context.Context, fileId string, thumbnail bool) (*os.File, *http.Response, error) {
+	client, auth := NewTraqClient()
 
-	file, res, err := client.FileApi.GetFile(auth, fileID).Execute()
+	var file *os.File
+	var res *http.Response
+	var err error
+
+	if thumbnail {
+		file, res, err = client.FileApi.GetThumbnailImage(auth, fileId).Execute()
+	} else {
+		file, res, err = client.FileApi.GetFile(auth, fileId).Execute()
+	}
 
 	if err != nil {
 		return nil, nil, err
