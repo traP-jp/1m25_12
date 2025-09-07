@@ -15,7 +15,7 @@ import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
 import { isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
-import { isWorkLikedByUser } from "@/actions/likedWorks";
+import { isWorkLikedByUser, loadlikeWork } from "@/actions/likedWorks";
 import { getMe } from "@/actions/getMe";
 import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
@@ -24,6 +24,7 @@ import { getFileMeta } from "@/actions/traq/getFileMeta";
 import { PICTURE_EXTENSIONS, SOUND_EXTENSIONS } from "@/lib/constants";
 import SoundPreview from "@/components/SoundPreview";
 import { ReviewType } from "@/generated/prisma";
+import { workAsyncStorage } from "next/dist/server/app-render/entry-base";
 
 type Params = {
 	id: string;
@@ -88,6 +89,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 	const userme = await getMe();
 	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
 	const isLiked = await isWorkLikedByUser(id, userme.id);
+	const likedcount = await loadlikeWork(id).catch(() => 0);
 
 	const reviews = await prisma.review.findMany({
 		where: { workId: id },
@@ -136,6 +138,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 						isLiked={isLiked}
 						id={id}
 						userid={userme.id}
+						likecount={likedcount}
 					/>
 					<Button
 						isIconOnly

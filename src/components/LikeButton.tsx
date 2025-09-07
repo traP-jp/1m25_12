@@ -1,18 +1,22 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { likeWork, UnlikeWork } from "@/actions/likedWorks";
+import { likeWork, UnlikeWork,loadlikeWork } from "@/actions/likedWorks";
 import { useState } from "react";
 
 type Params = {
 	isLiked: boolean;
 	id: string;
 	userid: string;
+	likecount: number;
 };
 
-export default function LikeButton({ isLiked, id, userid }: Params) {
+export default function LikeButton({ isLiked, id, userid ,likecount}: Params) {
 	const [liked, setLiked] = useState(isLiked);
 
+	const [likedcount, setLikeCount] = useState(likecount);
+
+	// 初期状態でいいねの数
 	return (
 		<Button
 			isIconOnly
@@ -30,10 +34,12 @@ export default function LikeButton({ isLiked, id, userid }: Params) {
 					await UnlikeWork(id, userid);
 					// Update local state
 					setLiked(false);
+					setLikeCount(likedcount - 1); // いいねの数を減らす
 				} else {
 					// Add like
 					await likeWork(id, userid);
 					setLiked(true);
+					setLikeCount(likedcount + 1); // いいねの数を増やす
 				}
 			}}
 		>
@@ -41,10 +47,12 @@ export default function LikeButton({ isLiked, id, userid }: Params) {
 			<span
 				className={
 					liked
-						? "i-material-symbols-favorite text-lg"
-						: "i-material-symbols-favorite-outline text-lg"
+						? "i-material-symbols-favorite text-lg "
+						: "i-material-symbols-favorite-outline text-lg "
 				}
-			></span>
+			>
+			</span>
+			{likedcount}
 		</Button>
 	);
 }

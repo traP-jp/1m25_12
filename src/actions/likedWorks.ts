@@ -50,3 +50,15 @@ export async function isWorkLikedByUser(workId: string, userId: string): Promise
 
     return (work?.likedUsers.length ?? 0) > 0;
 }
+
+export async function loadlikeWork(workId: string) {
+    const work = await prisma.work.findUnique({
+        where: { id: workId },
+        include: {
+            likedUsers: true, // ← likedUsersを含めて取得
+        },
+    });
+    if (!work) throw new Error("Work not found");
+
+    return work.likedUsers.length; // likedUsersの配列を返す
+}
