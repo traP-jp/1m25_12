@@ -19,13 +19,20 @@ const AudioPreview = ({ audioSrc }: AudioPreviewProps) => {
 	// isPlayingの状態が変わった時に、実際に音声の再生/停止を切り替えます
 	useEffect(() => {
 		if (isPlaying) {
-			// isPlayingがtrueなら再生
-			audioRef.current?.play();
+			const playPromise = audioRef.current?.play();
+			if (playPromise !== undefined) {
+				playPromise.catch(error => {
+					if (error.name === "AbortError") {
+						console.log("Audio play was interrupted.");
+					} else {
+						console.error("Audio play failed:", error);
+					}
+				});
+			}
 		} else {
-			// isPlayingがfalseなら停止
 			audioRef.current?.pause();
 		}
-	}, [isPlaying]); // isPlayingが変化した時だけこの中身を実行する
+	}, [isPlaying]);
 
 	const handleTogglePlay = () => {
 		// isPlayingの状態を切り替え
@@ -34,19 +41,17 @@ const AudioPreview = ({ audioSrc }: AudioPreviewProps) => {
 
 	return (
 		<div className="w-full max-w-lg mx-auto aspect-square relative overflow-hidden">
-			<div className="h-12 w-12 relative">
-				<Image
-					removeWrapper
-					src="/MusicBack.svg"
-					alt="ジャケット画像"
-					fill
-					radius="none"
-					className="!opacity-60"
-					loading="lazy"
-				/>
-			</div>
+			<Image
+				removeWrapper
+				src="/MusicBack.svg"
+				alt="ジャケット画像"
+				fill
+				radius="none"
+				className="object-cover !opacity-10"
+				loading="lazy"
+			/>
 
-			<div className="absolute inset-0 bg-opacity-30 flex justify-center items-center">
+			<div className="absolute inset-0 bg-opacity-30 flex justify-center items-center z-10">
 				<button
 					onClick={handleTogglePlay}
 					className="bg-white/30 text-gray-500 rounded-full p-4 hover:bg-white/50 transition-all duration-300 backdrop-blur-sm"
