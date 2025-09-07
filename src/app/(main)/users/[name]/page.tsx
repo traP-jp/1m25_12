@@ -46,7 +46,7 @@ export default async function UserPage({
 			<div>
 				<div className="mb-3">
 					<Link
-						href="/works"
+						href="/"
 						className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
 					>
 						<svg
@@ -63,7 +63,7 @@ export default async function UserPage({
 								d="M15 19l-7-7 7-7"
 							/>
 						</svg>
-						<span>作品に戻る</span>
+						<span>トップページに戻る</span>
 					</Link>
 				</div>
 				<div className="flex gap-8">
