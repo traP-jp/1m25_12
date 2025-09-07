@@ -15,7 +15,7 @@ import ImageGallery from "@/components/PicturePreview";
 import { getImageSize } from "@/actions/traq/getImageSize";
 import { getFilePath } from "@/lib/client";
 import { isWorkBookmarkedByUser } from "@/actions/bookmarkWorks";
-import { isWorkLikedByUser, loadlikeWork } from "@/actions/likedWorks";
+import { isWorkLikedByUser, loadWorkLikes } from "@/actions/likedWorks";
 import { getMe } from "@/actions/getMe";
 import BookmarkButton from "@/components/BookmarkButton";
 import LikeButton from "@/components/LikeButton";
@@ -86,10 +86,10 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 		})
 	);
 
-	const userme = await getMe();
-	const isBookmarked = await isWorkBookmarkedByUser(id, userme.id);
-	const isLiked = await isWorkLikedByUser(id, userme.id);
-	const likedcount = await loadlikeWork(id).catch(() => 0);
+	const me = await getMe();
+	const isBookmarked = await isWorkBookmarkedByUser(id, me.id);
+	const isLiked = await isWorkLikedByUser(id, me.id);
+	const likedCount = await loadWorkLikes(id).catch(() => 0);
 
 	const reviews = await prisma.review.findMany({
 		where: { workId: id },
@@ -128,7 +128,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 				<Link
 					href={`https://q.trap.jp/messages/${id}`}
 					size="sm"
-					className="text-base"
+					className="text-base w-fit"
 				>
 					<p className="text-xs text-gray-500 dark:text-gray-200">{`最終更新：${updatedAt.toLocaleString()}`}</p>
 				</Link>
@@ -137,8 +137,8 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<LikeButton
 						isLiked={isLiked}
 						id={id}
-						userid={userme.id}
-						likecount={likedcount}
+						userid={me.id}
+						likeCount={likedCount}
 					/>
 					<Button
 						isIconOnly
@@ -155,7 +155,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 					<Link
 						href={`/channels/${path}`}
 						size="sm"
-						className="text-base"
+						className="text-base w-fit"
 					>
 						#{path}
 					</Link>
@@ -205,7 +205,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 							<BookmarkButton
 								isBookmarked={isBookmarked}
 								id={id}
-								userid={userme.id}
+								userid={me.id}
 							/>
 						</div>
 					</div>
@@ -216,7 +216,7 @@ export default async function UserPage({ params }: { params: Promise<Params> }) 
 			<div className="sticky top-4 flex flex-2 flex-col items-start justify-start bg-gray-50  dark:bg-gray-900 p-8 rounded-sm h-auto">
 				{/* ここでが送信フォーム */}
 				<ReviewForm
-					userid={userme.id}
+					userid={me.id}
 					workid={id}
 				/>
 				<Divider className="my-2" />

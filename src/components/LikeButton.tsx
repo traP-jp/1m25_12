@@ -1,22 +1,21 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { likeWork, UnlikeWork,loadlikeWork } from "@/actions/likedWorks";
+import { likeWork, UnlikeWork } from "@/actions/likedWorks";
 import { useState } from "react";
+import clsx from "clsx";
 
 type Params = {
 	isLiked: boolean;
 	id: string;
 	userid: string;
-	likecount: number;
+	likeCount: number;
 };
 
-export default function LikeButton({ isLiked, id, userid ,likecount}: Params) {
+export default function LikeButton({ isLiked, id, userid, likeCount }: Params) {
 	const [liked, setLiked] = useState(isLiked);
+	const [likedCount, setLikeCount] = useState(likeCount);
 
-	const [likedcount, setLikeCount] = useState(likecount);
-
-	// 初期状態でいいねの数
 	return (
 		<Button
 			isIconOnly
@@ -34,25 +33,26 @@ export default function LikeButton({ isLiked, id, userid ,likecount}: Params) {
 					await UnlikeWork(id, userid);
 					// Update local state
 					setLiked(false);
-					setLikeCount(likedcount - 1); // いいねの数を減らす
+					setLikeCount(likedCount - 1); // いいねの数を減らす
 				} else {
 					// Add like
 					await likeWork(id, userid);
 					setLiked(true);
-					setLikeCount(likedcount + 1); // いいねの数を増やす
+					setLikeCount(likedCount + 1); // いいねの数を増やす
 				}
 			}}
 		>
 			{/* いいねされているときはi-material-symbols-favoriteにしてほしい */}
-			<span
-				className={
-					liked
-						? "i-material-symbols-favorite text-lg "
-						: "i-material-symbols-favorite-outline text-lg "
-				}
-			>
-			</span>
-			{likedcount}
+			<div className="flex flex-row items-center gap-1">
+				<span
+					className={
+						liked
+							? "i-material-symbols-favorite text-lg "
+							: "i-material-symbols-favorite-outline text-lg "
+					}
+				/>
+				<span>{likedCount}</span>
+			</div>
 		</Button>
 	);
 }
