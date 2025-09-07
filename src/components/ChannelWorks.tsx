@@ -20,7 +20,7 @@ type Props = {
 	page?: number;
 };
 
-const PAGE_SIZE = 12; // 1ページあたりの表示件数
+const PAGE_SIZE = 60; // 1ページあたりの表示件数
 
 export default async function ChannelWorks({ path, id, page }: Props) {
 	const pathString = path.join("/");
